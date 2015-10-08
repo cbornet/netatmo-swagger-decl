@@ -1,0 +1,1534 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Netatmo",
+        "description": "<h3>Welcome to the Netatmo swagger on-line documentation !</h3>This site is a complement to the official <a href=\"https://dev.netatmo.com/\">Netatmo developper documentation</a> using swagger to bring interactivity and easy testing of requests with the \"try it\" button (authenticate with the authorization code 0Auth2 flow by clicking the authenticate button in the methods). You can find the source code for this site can be found in the project <a href=\"https://github.com/cbornet/netatmo-swagger-ui\">netatmo-swagger-ui</a>. You can also use the online <a href=\"./swagger.json\">swagger declaration</a> file to generate code or static documentation (see <a href=\"https://github.com/cbornet/netatmo-swagger-api\">netatmo-swagger-api</a>)."
+    },
+    "host": "api.netatmo.net",
+    "basePath": "/",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "text/plain"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "station",
+            "description": "Weather station specific methods"
+        },
+        {
+            "name": "thermostat",
+            "description": "Thermostat specific methods"
+        },
+        {
+            "name": "welcome",
+            "description": "Welcome specific methods"
+        },
+        {
+            "name": "public",
+            "description": "Public stations specific methods"
+        },
+        {
+            "name": "partner",
+            "description": "Partner API specific methods"
+        },
+        {
+            "name": "oauth",
+            "description": "Oauth2 methods"
+        }
+    ],
+    "paths": {
+        "/oauth2/token": {
+            "post": {
+                "tags": [
+                    "oauth"
+                ],
+                "description": "OAuth2 token endpoint\n",
+                "operationId": "getToken",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "grant_type",
+                        "in": "formData",
+                        "description": "Oauth2 grant type",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "password",
+                            "authorization_code",
+                            "refresh_token"
+                        ]
+                    },
+                    {
+                        "name": "client_id",
+                        "in": "formData",
+                        "description": "Application client ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "client_secret",
+                        "in": "formData",
+                        "description": "Application client secret",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "scope",
+                        "in": "formData",
+                        "description": "Scopes to use, separated by a space",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "username",
+                        "in": "formData",
+                        "description": "User name if grant_type is password",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "description": "User password if grant_type is password",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "code",
+                        "in": "formData",
+                        "description": "Authorization code if grant_type is authorization_code",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "redirect_uri",
+                        "in": "formData",
+                        "description": "Redirect URI if grant_type is authorization_code",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "refresh_token",
+                        "in": "formData",
+                        "description": "Refresh token if grant_type is refresh_token",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/AccessToken"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getuser": {
+            "get": {
+                "tags": [
+                    "station",
+                    "thermostat",
+                    "welcome"
+                ],
+                "description": "The method getuser returns information about a user such as prefered language, prefered units, and list of devices.\n",
+                "operationId": "getuser",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAUserResponse"
+                        }
+                    }
+                },
+                "deprecated": true
+            }
+        },
+        "/api/devicelist": {
+            "get": {
+                "tags": [
+                    "station",
+                    "thermostat",
+                    "welcome",
+                    "partner"
+                ],
+                "description": "The method devicelist returns the list of devices owned by the user, and their modules.\nA device is identified by its _id (which is its mac address) and each device may have one, several or no modules, also identified by an _id.\n",
+                "operationId": "devicelist",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "app_type",
+                        "in": "query",
+                        "description": "Defines which device type will be returned by devicelist. It could be app_thermostat or app_station (by default if not provided)",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                            "app_thermostat",
+                            "app_station"
+                        ]
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Specify a device_id if you want to retrieve only this device informations.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "get_favorites",
+                        "in": "query",
+                        "description": "When set to \"true\", the favorite devices of the user are returned. This flag is available only if the devices requested are Weather Stations.",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NADeviceListResponse"
+                        }
+                    }
+                },
+                "deprecated": true
+            }
+        },
+        "/api/getmeasure": {
+            "get": {
+                "tags": [
+                    "station",
+                    "thermostat",
+                    "welcome",
+                    "partner",
+                    "public"
+                ],
+                "description": "The method getmeasure returns the measurements of a device or a module.\n",
+                "operationId": "getmeasure",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Id of the device whose module's measurements you want to retrieve. This _id can be found in the user's devices field.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "If you don't specify any module_id you will retrieve the device's measurements. If you specify a module_id you will retrieve the module's measurements.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "scale",
+                        "in": "query",
+                        "description": "Defines the time interval between two measurements.\nPossible values :\nmax -> every value stored will be returned\n30min -> 1 value every 30 minutes\n1hour -> 1 value every hour\n3hours -> 1 value every 3 hours\n1day -> 1 value per day\n1week -> 1 value per week\n1month -> 1 value per month\n",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "max",
+                            "30min",
+                            "1hour",
+                            "3hours",
+                            "1day",
+                            "1week",
+                            "1month"
+                        ]
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Sets the type of measurement you want to retrieve.\nThe different types of measurements must be given in a comma separated list of strings.\nExample: type=\"Temperature,Humidity\"\nDepending on the device's type and the scale, different measurements are available:\nFor Weather Station :\n\n  max -> Temperature, CO2, Humidity, Pressure, Noise, Rain (if\nmodule_id is a rain sensor)\n\n  30min, 1hour, 3hours -> Temperature, CO2, Humidity, Pressure,\nNoise, min_temp, max_temp, min_hum, max_hum, min_pressure, max_pressure, min_noise, max_noise, sum_rain (if module_id is a rain sensor)\n\n  1day, 1week, 1month -> Temperature, Co2, Humidity, Pressure, Noise,\nmin_temp, date_min_temp, max_temp, date_max_temp, min_hum, date_min_hum, max_hum, date_max_hum, min_pressure, date_min_pressure, max_pressure, date_max_pressure, min_noise, date_min_noise, max_noise, date_max_noise, date_min_co2, date_max_co2, sum_rain (if module_id is a rain sensor)\nPlease note, the measurements sent in the response will be in the same order as in this list.\nAll measurements are expressed in metric units:\n\n  Temperature: Celsius\n\n  Humidity: %\n\n  Co2: ppm\n\n  Pressure: mbar\n\n  Noise: db\n\n  Rain: mm\n\nFor Thermostat:\n\n  max -> Temperature, Sp_Temperature, BoilerOn, BoilerOff\n\n  30min, 1hour, 3hours -> Temperature, Sp_Temperature, min_temp,\nmax_temp, sum_boiler_on, sum_boiler_off\n\n  1day, 1week, 1month -> Temperature, min_temp, date_min_temp,\nmax_temp, sum_boiler_on, sum_boiler_off\n\n  where\n\nTemperature: Celsius\n\n  Sp_Temperature (temperature setpoint): Celsius\n\n  BoilerOn: Duration, since the previous data point, during which the\nboiler has been on (in seconds)\n\n  BoilerOff : Duration, since the previous data point, during which\nthe boiler has been off (in seconds).\n\n  sum_boiler_on: Total duration during which the boiler has been on,\nat a specific scale (in seconds).\n\n  sum_boiler_off: Total duration during which the boiler has been\noff, at a specific scale (in seconds).\n",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "date_begin",
+                        "in": "query",
+                        "description": "Starting timestamp (utc) of the requested measurements.\nPlease note measurement retrieving is limited to 1024 measurements. \n",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "date_end",
+                        "in": "query",
+                        "description": "Ending timestamp (utc) of the request measurements.\nIf you want only the last measurement, do not provide date_begin, and set date_end to \"last\". \n",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Limits the number of measurements returned (default & max is 1024)",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 1024
+                    },
+                    {
+                        "name": "optimize",
+                        "in": "query",
+                        "description": "Allows you to choose the format of the answer.\nIf you build a mobile app and bandwith usage is an issue, use optimize = true.\nUse optimize = false, for an easier parse. In this case, values are indexed by sorted timestamp.\nExample of un-optimized response :\n{\"status\": \"ok\", \n  \"body\": {\n    \"1347575400\": [18.3,39],\n    \"1347586200\": [20.6,48]\n  },\n\"time_exec\": 0.012136936187744}\nIf optimize is set true, measurements are returned as an array of series of regularly spaced measurements. Each series is defined by a beginning time beg_time and a step between measurements, step_time:\n{\"status\": \"ok\",\n  \"body\": [\n    {\"beg_time\": 1347575400,\n     \"step_time\": 10800,\n     \"value\": \n        [[18.3,39],\n        [ 20.6,48]]\n    }],\n\"time_exec\": 0.014238119125366}\nDefault value is true.\n",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "real_time",
+                        "in": "query",
+                        "description": "In scales higher than max, since the data is aggregated, the timestamps returned are by default offset by +(scale/2).\nFor instance, if you ask for measurements at a daily scale, you will receive data timestamped at 12:00 if real_time is set to false (default case), and timestamped at 00:00 if real_time is set to true.\nNB : The servers always store data with real_time set to true and data are offset by this parameter AFTER having being time-filtered, thus you could have data after date_end if real_time is set to false.\n",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAMeasureResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getthermstate": {
+            "get": {
+                "tags": [
+                    "thermostat",
+                    "partner"
+                ],
+                "description": "The method getthermstate returns the last Thermostat measurements, its current weekly schedule, and, if present, its current manual temperature setpoint.",
+                "operationId": "getthermstate",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "The relay id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "The thermostat id",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAThermStateResponse"
+                        }
+                    }
+                },
+                "deprecated": true
+            }
+        },
+        "/api/syncschedule": {
+            "post": {
+                "tags": [
+                    "thermostat"
+                ],
+                "description": "The method syncschedule changes the Thermostat weekly schedule.",
+                "operationId": "syncschedule",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "The relay id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "The thermostat id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "therm_program",
+                        "description": "The thermostat program (zones, timetable and name)",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NAThermProgram"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAOkResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/setthermpoint": {
+            "post": {
+                "tags": [
+                    "thermostat"
+                ],
+                "description": "The method setthermpoint changes the Thermostat manual temperature setpoint.",
+                "operationId": "setthermpoint",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "The relay id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "The thermostat id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "setpoint_mode",
+                        "in": "query",
+                        "description": "Chosen setpoint_mode",
+                        "required": true,
+                        "type": "string",
+                        "enum": [
+                            "program",
+                            "away",
+                            "hg",
+                            "manual",
+                            "off",
+                            "max"
+                        ]
+                    },
+                    {
+                        "name": "setpoint_endtime",
+                        "in": "query",
+                        "description": "When using the manual or max setpoint_mode, this parameter defines when the setpoint expires.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "setpoint_temp",
+                        "in": "query",
+                        "description": "When using the manual setpoint_mode, this parameter defines the temperature setpoint (in Celcius) to use.",
+                        "required": false,
+                        "type": "number",
+                        "format": "float"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAOkResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/switchschedule": {
+            "post": {
+                "tags": [
+                    "thermostat"
+                ],
+                "description": "The method switchschedule switches the Thermostat's schedule to another existing schedule.",
+                "operationId": "switchschedule",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "The relay id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "The thermostat id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "schedule_id",
+                        "in": "query",
+                        "description": "The schedule id. It can be found in the getthermstate response, under the keys \"therm_program_backup\" and \"therm_program\".\n",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAOkResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/createnewschedule": {
+            "post": {
+                "tags": [
+                    "thermostat"
+                ],
+                "description": "The method createnewschedule creates a new schedule stored in the backup list.",
+                "operationId": "createnewschedule",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "The relay id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "module_id",
+                        "in": "query",
+                        "description": "The thermostat id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "therm_program",
+                        "description": "The thermostat program (zones and timetable)",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NAThermProgram"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NANewScheduleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/partnerdevices": {
+            "get": {
+                "tags": [
+                    "partner"
+                ],
+                "description": "The method partnerdevices returns the list of device_id to which your partner application has access to.",
+                "operationId": "partnerdevices",
+                "parameters": [
+                    {
+                        "name": "access_token",
+                        "in": "query",
+                        "description": "Your access token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAPartnerDevicesResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "AccessToken": {
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "expire_in": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "expires_in": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "scope": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "NAOkResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAUserResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NAUserBody"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NADeviceListResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NADeviceListBody"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAMeasureResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAMeasureBodyElem"
+                    }
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAThermStateResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NAThermStateBody"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NANewScheduleResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NANewScheduleBody"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAPartnerDevicesResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAUserBody": {
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "administrative": {
+                    "description": "Contains administrative information related to the user",
+                    "$ref": "#/definitions/NAUserAdministrative"
+                },
+                "date_creation": {
+                    "$ref": "#/definitions/NADate"
+                },
+                "devices": {
+                    "type": "array",
+                    "description": "An array of string containing the ids of the devices owned by the user",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "friend_devices": {
+                    "type": "array",
+                    "description": "An array of string containing the ids of the devices on which the user has a \"guest\" access\n",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mail": {
+                    "type": "string"
+                },
+                "timeline_not_read": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "timeline_size": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NADeviceListBody": {
+            "properties": {
+                "devices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NADevice"
+                    }
+                },
+                "modules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAModule"
+                    }
+                }
+            }
+        },
+        "NAMeasureBodyElem": {
+            "properties": {
+                "beg_time": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "step_time": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                }
+            }
+        },
+        "NAThermStateBody": {
+            "properties": {
+                "setpoint": {
+                    "$ref": "#/definitions/NASetpoint"
+                },
+                "setpoint_order": {
+                    "$ref": "#/definitions/NASetpoint"
+                },
+                "therm_program": {
+                    "$ref": "#/definitions/NAThermProgram"
+                },
+                "therm_program_backup": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAThermProgram"
+                    }
+                },
+                "therm_program_order": {
+                    "$ref": "#/definitions/NAThermProgram"
+                },
+                "therm_orientation": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "therm_relay_cmd": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "battery_vp": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "rf_status": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "plug_connected_boiler": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "udp_conn": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "last_therm_seen": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_plug_seen": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "wifi_status": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "measured": {
+                    "$ref": "#/definitions/NAThermMeasure"
+                }
+            }
+        },
+        "NANewScheduleBody": {
+            "properties": {
+                "schedule_id": {
+                    "type": "string",
+                    "description": "Id of the schedule. It can be use with the method \"switchschedule\" \n"
+                }
+            }
+        },
+        "NAUserAdministrative": {
+            "properties": {
+                "country": {
+                    "type": "string",
+                    "description": "user country"
+                },
+                "lang": {
+                    "type": "string",
+                    "description": "user locale"
+                },
+                "reg_locale": {
+                    "type": "string",
+                    "description": "user regional preferences (used for displaying date)"
+                },
+                "unit": {
+                    "type": "string",
+                    "description": "0 -> metric system, 1 -> imperial system"
+                },
+                "windunit": {
+                    "type": "string",
+                    "description": "0 -> kph, 1 -> mph, 2 -> ms, 3 -> beaufort, 4 -> knot"
+                },
+                "pressureunit": {
+                    "type": "string",
+                    "description": "0 -> mbar, 1 -> inHg, 2 -> mmHg"
+                },
+                "feel_like_algo": {
+                    "type": "string",
+                    "description": "algorithm used to compute feel like temperature, 0 -> humidex, 1 -> heat-index"
+                }
+            }
+        },
+        "NADate": {
+            "properties": {
+                "sec": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "usec": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NADevice": {
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "behavior": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "cipher_id": {
+                    "type": "string"
+                },
+                "date_setup": {
+                    "$ref": "#/definitions/NADate"
+                },
+                "firmware": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "heating_system": {
+                    "$ref": "#/definitions/NAHeatingSystem"
+                },
+                "house_model": {
+                    "$ref": "#/definitions/NAHouseModel"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "last_fw_update": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_radio_store": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_status_store": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_upgrade": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "module_name": {
+                    "type": "string"
+                },
+                "modules": {
+                    "type": "array",
+                    "description": "It lists which modules are linked with this device",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "place": {
+                    "$ref": "#/definitions/NAPlace"
+                },
+                "setpoint": {
+                    "type": "object"
+                },
+                "setpoint_default_duration": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "setpoint_order": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/NAObject"
+                        }
+                    }
+                },
+                "public_ext_data": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "station_name": {
+                    "type": "string"
+                },
+                "therm_program": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/NAThermProgram"
+                    }
+                },
+                "therm_program_backup": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/NAThermProgram"
+                        }
+                    }
+                },
+                "therm_program_order": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/NAObject"
+                        }
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Included in every device or module. It defines the type of the device/module. Its values are among :\nNAMain : for the base station\nNAModule1 : for the outdoor module\nNAModule4 : for the additionnal indoor module\nNAModule3 : for the rain gauge module\nNAPlug : for the thermostat relay/plug\nNATherm1 : for the thermostat module\n"
+                },
+                "user_owner": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "udp_conn": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "wifi_status": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "It contains the current wifi status. The different thresholds to take into account are\nRSSI_THRESHOLD_0 = 86 bad signal\nRSSI_THRESHOLD_1 = 71 middle quality signal\nRSSI_THRESHOLD_2 = 56 good signal\n"
+                },
+                "new_feature_avail": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "first_pid_avail": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "data_type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "NAModule": {
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "date_setup": {
+                    "$ref": "#/definitions/NADate"
+                },
+                "firmware": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Included in every device or module. It defines the type of the device/module. Its values are among :\nNAMain : for the base station\nNAModule1 : for the outdoor module\nNAModule4 : for the additionnal indoor module\nNAModule3 : for the rain gauge module\nNAPlug : for the thermostat relay/plug\nNATherm1 : for the thermostat module\n"
+                },
+                "module_name": {
+                    "type": "string"
+                },
+                "main_device": {
+                    "type": "string"
+                },
+                "last_message": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_seen": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "public_ext_data": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "rf_status": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "\"It contains the current radio status. The different thresholds to take into account are :\" |\nRADIO_THRESHOLD_SIGNAL_LOW = 90 \nRADIO_THRESHOLD_SIGNAL_MEDIUM = 80\nRADIO_THRESHOLD_SIGNAL_HIGH = 70\nRADIO_THRESHOLD_SIGNAL_FULL = 60\n"
+                },
+                "battery_vp": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "It contains the current battery status. The threshold depends on the kind of module, below is the list of the different threshold to take into account according the module type.\n\"Indoor module Battery range: 6000 ... 4200\" |\nINDOOR_BATTERY_LEVEL_FULL = 5640\nINDOOR_BATTERY_LEVEL_HIGH = 5280\nINDOOR_BATTERY_LEVEL_MEDIUM = 4920\nINDOOR_BATTERY_LEVEL_LOW = 4560\n\"Below 4560: very low\" |\n  \n\"Raingauge and outdoor module Battery range: 6000 ... 3600\" |\nBATTERY_LEVEL_FULL = 5500\nBATTERY_LEVEL_HIGH = 5000\nBATTERY_LEVEL_MEDIUM = 4500\nBATTERY_LEVEL_LOW = 4000\n\"Below 4000: very low\" |\n  \n\"Thermostat Battery range: 4500 ... 3000\" |\nTHERMOSTAT_BATTERY_LEVEL_FULL = 4100\nTHERMOSTAT_BATTERY_LEVEL_HIGH = 3600\nTHERMOSTAT_BATTERY_LEVEL_MEDIUM = 3300\nTHERMOSTAT_BATTERY_LEVEL_LOW = 3000\n\"Below 3000: very low\"\n"
+                },
+                "therm_orientation": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "therm_relay_cmd": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "dashboard_data": {
+                    "description": "It contains all the measurements that can be displayed on the dashboard",
+                    "$ref": "#/definitions/NADashboardData"
+                },
+                "data_type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "NAHouseModel": {
+            "properties": {
+                "algo_type": {
+                    "type": "string"
+                },
+                "ca": {
+                    "$ref": "#/definitions/NAHouseModelCa"
+                },
+                "ext_temps": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "first_anticipate_avail": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "first_pid_avail": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "gefs": {
+                    "$ref": "#/definitions/NAStation"
+                },
+                "in_use": {
+                    "type": "string"
+                },
+                "last_compute_try": {
+                    "$ref": "#/definitions/NADate"
+                },
+                "link_station": {
+                    "$ref": "#/definitions/NALinkStation"
+                },
+                "pid_algo": {
+                    "$ref": "#/definitions/NAPidAlgo"
+                },
+                "station": {
+                    "$ref": "#/definitions/NAStation"
+                },
+                "prefered_algo_type": {
+                    "type": "string"
+                },
+                "simple_algo": {
+                    "$ref": "#/definitions/NASimpleAlgo"
+                },
+                "time": {
+                    "$ref": "#/definitions/NADate"
+                },
+                "station_firsttime_anticipate": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "time_algo_changed": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "time_pid_computed": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAHouseModelCa": {
+            "properties": {
+                "te": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "ti": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "so": {
+                    "type": "string"
+                }
+            }
+        },
+        "NAStation": {
+            "properties": {
+                "lag_down": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "lag_up": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "off_overshoot": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "on_overshoot": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "pk": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "tau": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NALinkStation": {
+            "properties": {
+                "mac": {
+                    "type": "string"
+                },
+                "ext": {
+                    "type": "string"
+                },
+                "Temperature": {
+                    "type": "number",
+                    "format": "float"
+                }
+            }
+        },
+        "NAPidAlgo": {
+            "properties": {
+                "gain": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "period": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "td": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "ti": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAPlace": {
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "altitude": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "from_ip": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "improveLocProposed": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "location": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "timezone": {
+                    "type": "string"
+                },
+                "trust_location": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "NASetpoint": {
+            "properties": {
+                "setpoint_temp": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "setpoint_endtime": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "setpoint_mode": {
+                    "type": "string"
+                }
+            }
+        },
+        "NAThermProgram": {
+            "properties": {
+                "program_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "zones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAZone"
+                    }
+                },
+                "timetable": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NATimeTableItem"
+                    }
+                },
+                "selected": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "NAZone": {
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "type": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "temp": {
+                    "type": "number",
+                    "format": "float"
+                }
+            }
+        },
+        "NATimeTableItem": {
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "m_offset": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAHeatingSystem": {
+            "properties": {
+                "heating_energy": {
+                    "type": "string"
+                }
+            }
+        },
+        "NASimpleAlgo": {
+            "properties": {
+                "high_deadband": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NADashboardData": {
+            "properties": {
+                "time_utc": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "device_id": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "BoilerOn": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "BoilerOff": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "Temperature": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Last temperature measure @ time_utc (in °C)"
+                },
+                "date_max_temp": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Timestamp when max temperature was measured"
+                },
+                "date_min_temp": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Timestamp when min temperature was measured"
+                },
+                "min_temp": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Max temperature of the day (measured @ date_max_temp)"
+                },
+                "max_temp": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Min temperature of the day (measured @ date_min_temp)"
+                },
+                "AbsolutePressure": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Real measured pressure @ time_utc (in mb)"
+                },
+                "CO2": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Last Co2 measured @ time_utc (in ppm)"
+                },
+                "Humidity": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Last humidity measured @ time_utc (in %)"
+                },
+                "Noise": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Last noise measured @ time_utc (in db)"
+                },
+                "Pressure": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Last Sea level pressure measured @ time_utc (in mb)"
+                },
+                "Rain": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Last rain measured (in mm)"
+                },
+                "sum_rain_1": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Amount of rain in last hour"
+                },
+                "sum_rain_24": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Amount of rain today"
+                }
+            }
+        },
+        "NAThermMeasure": {
+            "properties": {
+                "time": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "temperature": {
+                    "type": "number",
+                    "format": "float"
+                },
+                "setpoint_temp": {
+                    "type": "number",
+                    "format": "float"
+                }
+            }
+        },
+        "NAObject": {
+            "properties": {
+                "$id": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
