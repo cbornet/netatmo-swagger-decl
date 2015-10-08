@@ -648,6 +648,9 @@
                 "time_server": {
                     "type": "integer",
                     "format": "int32"
+                },
+                "body": {
+                    "type": "string"
                 }
             }
         },
@@ -1411,6 +1414,9 @@
             "properties": {
                 "heating_energy": {
                     "type": "string"
+                },
+                "heating_system_window_seen": {
+                    "type": "boolean"
                 }
             }
         },
