@@ -896,6 +896,10 @@
                     "type": "integer",
                     "format": "int32"
                 },
+                "hw_version": {
+                    "type": "integer",
+                    "format": "int32"
+                },
                 "heating_system": {
                     "$ref": "#/definitions/NAHeatingSystem"
                 },
