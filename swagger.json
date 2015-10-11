@@ -591,137 +591,131 @@
         }
     },
     "definitions": {
+        "NAResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
         "NAOkResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "body": {
-                    "type": "string"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "string"
+                        }
+                    }
                 }
-            }
-        },
+            ]
+        },    
         "NAUserResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "$ref": "#/definitions/NAUserBody"
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "$ref": "#/definitions/NAUserBody"
+                        }
+                    }
                 }
-            }
+            ]
         },
         "NADeviceListResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "$ref": "#/definitions/NADeviceListBody"
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "$ref": "#/definitions/NADeviceListBody"
+                        }
+                    }
                 }
-            }
+            ]
         },
         "NAMeasureResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/NAMeasureBodyElem"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/NAMeasureBodyElem"
+                            }
+                        }
                     }
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
                 }
-            }
+            ]
         },
         "NAThermStateResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "$ref": "#/definitions/NAThermStateBody"
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "$ref": "#/definitions/NAThermStateBody"
+                        }
+                    }
                 }
-            }
+            ]
         },
         "NANewScheduleResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "$ref": "#/definitions/NANewScheduleBody"
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "$ref": "#/definitions/NANewScheduleBody"
+                        }
+                    }
                 }
-            }
+            ]
         },
         "NAPartnerDevicesResponse": {
-            "properties": {
-                "status": {
-                    "type": "string"
+            "allOf": [
+                {
+                    "$ref": "#/definitions/NAResponse"
                 },
-                "body": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
                     }
-                },
-                "time_exec": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "time_server": {
-                    "type": "integer",
-                    "format": "int32"
                 }
-            }
+            ]
         },
         "NAUserBody": {
             "properties": {
