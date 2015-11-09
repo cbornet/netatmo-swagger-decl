@@ -667,7 +667,14 @@
                 "scope": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "read_station",
+                            "read_thermostat",
+                            "write_thermostat",
+                            "read_camera",
+                            "access_camera"
+                        ]
                     }
                 }
             }
