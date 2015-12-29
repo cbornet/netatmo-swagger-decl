@@ -1466,22 +1466,22 @@
                     "type": "integer",
                     "format": "int32",
                     "description": "Amount of rain today"
-                }
+                },
                 "WindAngle": {
                     "type": "integer",
                     "format": "int32",
                     "description": "Current 5 min average wind direction measured @ time_utc (in °)"
-                }
+                },
                 "GustAngle": {
                     "type": "integer",
                     "format": "int32",
                     "description": "Direction of the last 5 min highest gust wind"
-                }
+                },
                 "WindStrength": {
                     "type": "integer",
                     "format": "int32",
                     "description": "Current 5 min average wind speed measured @ time_utc (in km/h)"
-                }
+                },
                 "GustStrength": {
                     "type": "integer",
                     "format": "int32",
