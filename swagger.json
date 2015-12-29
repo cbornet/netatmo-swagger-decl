@@ -224,7 +224,7 @@
                         "in": "query",
                         "description": "Ending timestamp (utc) of the request measurements.\nIf you want only the last measurement, do not provide date_begin, and set date_end to \"last\". \n",
                         "required": false,
-                        "type": "string",
+                        "type": "string"
                     },
                     {
                         "name": "limit",
