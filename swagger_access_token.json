@@ -325,8 +325,7 @@
                         "in": "query",
                         "description": "Ending timestamp (utc) of the request measurements.\nIf you want only the last measurement, do not provide date_begin, and set date_end to \"last\". \n",
                         "required": false,
-                        "type": "integer",
-                        "format": "int32"
+                        "type": "string"
                     },
                     {
                         "name": "limit",
@@ -1130,6 +1129,10 @@
                     "type": "boolean",
                     "default": false
                 },
+                "dashboard_data": {
+                    "description": "It contains all the measurements that can be displayed on the dashboard",
+                    "$ref": "#/definitions/NADashboardData"
+                },
                 "data_type": {
                     "type": "array",
                     "items": {
@@ -1551,6 +1554,26 @@
                     "type": "integer",
                     "format": "int32",
                     "description": "Amount of rain today"
+                },
+                "WindAngle": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Current 5 min average wind direction measured @ time_utc (in °)"
+                },
+                "GustAngle": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Direction of the last 5 min highest gust wind"
+                },
+                "WindStrength": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Current 5 min average wind speed measured @ time_utc (in km/h)"
+                },
+                "GustStrength": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Speed of the last 5 min highest gust wind"
                 }
             }
         },
