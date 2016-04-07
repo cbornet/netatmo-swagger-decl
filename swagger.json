@@ -836,12 +836,10 @@
                     "format": "int32"
                 },
                 "plug_connected_boiler": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "udp_conn": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "last_therm_seen": {
                     "type": "integer",
@@ -990,8 +988,7 @@
                     }
                 },
                 "public_ext_data": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "station_name": {
                     "type": "string"
@@ -1031,8 +1028,7 @@
                     }
                 },
                 "udp_conn": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "wifi_status": {
                     "type": "integer",
@@ -1040,12 +1036,10 @@
                     "description": "It contains the current wifi status. The different thresholds to take into account are\nRSSI_THRESHOLD_0 = 86 bad signal\nRSSI_THRESHOLD_1 = 71 middle quality signal\nRSSI_THRESHOLD_2 = 56 good signal\n"
                 },
                 "new_feature_avail": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "first_pid_avail": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "dashboard_data": {
                     "description": "It contains all the measurements that can be displayed on the dashboard",
@@ -1090,8 +1084,7 @@
                     "format": "int32"
                 },
                 "public_ext_data": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "rf_status": {
                     "type": "integer",
@@ -1139,12 +1132,10 @@
                     }
                 },
                 "first_anticipate_avail": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "first_pid_avail": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "gefs": {
                     "$ref": "#/definitions/NAStation"
@@ -1174,8 +1165,7 @@
                     "$ref": "#/definitions/NADate"
                 },
                 "station_firsttime_anticipate": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "time_algo_changed": {
                     "type": "integer",
@@ -1277,12 +1267,10 @@
                     "type": "string"
                 },
                 "from_ip": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "improveLocProposed": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 },
                 "location": {
                     "type": "array",
@@ -1295,8 +1283,7 @@
                     "type": "string"
                 },
                 "trust_location": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 }
             }
         },
@@ -1336,8 +1323,7 @@
                     }
                 },
                 "selected": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "boolean"
                 }
             }
         },
