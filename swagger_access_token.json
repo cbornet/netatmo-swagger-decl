@@ -1547,18 +1547,18 @@
                     "description": "Last Sea level pressure measured @ time_utc (in mb)"
                 },
                 "Rain": {
-                    "type": "integer",
-                    "format": "int32",
+                    "type": "number",
+                    "format": "float",
                     "description": "Last rain measured (in mm)"
                 },
                 "sum_rain_1": {
-                    "type": "integer",
-                    "format": "int32",
+                    "type": "number",
+                    "format": "float",
                     "description": "Amount of rain in last hour"
                 },
                 "sum_rain_24": {
-                    "type": "integer",
-                    "format": "int32",
+                    "type": "number",
+                    "format": "float",
                     "description": "Amount of rain today"
                 },
                 "WindAngle": {
