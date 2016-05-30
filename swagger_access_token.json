@@ -10,10 +10,12 @@
             "url": "https://dev.netatmo.com/dev/resources/legal/introduction"
         },
         "contact": {
+            "name": "Netatmo",
             "email": "contact-api@netatmo.com"
         }
     },
     "externalDocs": {
+        "description": "Netatmo reference API documentation",
         "url": "https://dev.netatmo.com/dev/resources/technical/reference"
     },
     "host": "api.netatmo.net",
