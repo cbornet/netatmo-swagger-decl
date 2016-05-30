@@ -13,6 +13,9 @@
             "email": "contact-api@netatmo.com"
         }
     },
+    "externalDocs": {
+        "url": "https://dev.netatmo.com/dev/resources/technical/reference"
+    },
     "host": "api.netatmo.net",
     "basePath": "/",
     "schemes": [
