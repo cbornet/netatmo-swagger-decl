@@ -18,7 +18,7 @@
         "description": "Netatmo reference API documentation",
         "url": "https://dev.netatmo.com/dev/resources/technical/reference"
     },
-    "host": "api.netatmo.net",
+    "host": "api.netatmo.com",
     "basePath": "/api",
     "schemes": [
         "https"
@@ -56,8 +56,7 @@
             "get": {
                 "tags": [
                     "station",
-                    "thermostat",
-                    "welcome"
+                    "thermostat"
                 ],
                 "description": "The method getuser returns information about a user such as prefered language, prefered units, and list of devices.\n",
                 "operationId": "getuser",
@@ -85,7 +84,6 @@
                 "tags": [
                     "station",
                     "thermostat",
-                    "welcome",
                     "partner"
                 ],
                 "description": "The method devicelist returns the list of devices owned by the user, and their modules.\nA device is identified by its _id (which is its mac address) and each device may have one, several or no modules, also identified by an _id.\n",
@@ -144,7 +142,6 @@
                 "tags": [
                     "station",
                     "thermostat",
-                    "welcome",
                     "partner",
                     "public"
                 ],
@@ -633,7 +630,354 @@
                     }
                 ]
             }
-        }
+        },
+        
+
+        "/gethomedata": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Returns information about users homes and cameras.\n",
+                "operationId": "gethomedata",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "Specify if you're looking for the events of a specific Home.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeHomeDataResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },
+        "/getcamerapicture": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Returns the snapshot associated to an event.\n",
+                "operationId": "getcamerapicture",
+                "parameters": [
+                    {
+                        "name": "image_id",
+                        "in": "query",
+                        "description": "id of the image (can be retrieved as 'id' in 'face' in Gethomedata, or as 'id' in 'snapshot' in Getnextevents, Getlasteventof and Geteventsuntil)",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "key",
+                        "in": "query",
+                        "description": "Security key to access snapshots.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeCameraPictureResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },
+      "/geteventsuntil": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Returns the snapshot associated to an event.\n",
+                "operationId": "geteventsuntil",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "ID of the Home you're interested in",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Your request will retrieve all the events until this one",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeEventsResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },
+        "/getlasteventof": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Returns most recent events.\n",
+                "operationId": "getlasteventof",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "ID of the Home you're interested in",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "Your request will retrieve all events of the given home until the most recent event of the given person",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeEventsResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },        
+        "/getnextevents": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Returns previous events.\n",
+                "operationId": "getnextevents",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "ID of the Home you're interested in",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Your request will retrieve events occured before this one",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "Number of events to retrieve. Default is 30.",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeEventsResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },                                
+        "/setpersonsaway": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Sets a person as 'Away' or the Home as 'Empty'. The event will be added to the user’s timeline.\n",
+                "operationId": "setpersonsaway",
+                "parameters": [
+                    {
+                        "name": "home_id",
+                        "in": "query",
+                        "description": "ID of the Home you're interested in",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "person_id",
+                        "in": "query",
+                        "description": "If a person_id is specified, that person will be set as 'Away'. If no person_id is specified, the Home will be set as 'Empty'.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomePersonsAwayResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },        
+        "/addwebhook": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Links a callback url to a user.\n",
+                "operationId": "addwebhook",
+                "parameters": [
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "description": "Your webhook callback url",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "app_types",
+                        "in": "query",
+                        "description": "Webhooks are only available for Welcome, enter app_camera.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeWebhookResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        },        
+        "/dropwebhook": {
+            "post": {
+                "tags": [
+                    "welcome"
+                ],
+                "description": "Dissociates a webhook from a user.\n",
+                "operationId": "dropwebhook",
+                "parameters": [
+                    {
+                        "name": "app_types",
+                        "in": "query",
+                        "description": "For Welcome, use app_camera",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAWelcomeWebhookResponse"
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "code_oauth": []
+                    },
+                    {
+                        "password_oauth": []
+                    }
+                ]
+            }
+        }        
+                
+                
     },
     "securityDefinitions": {
         "code_oauth": {
@@ -644,7 +988,10 @@
             "scopes": {
                 "read_station": "Read weather station's data",
                 "write_thermostat": "Configure the thermostat",
-                "read_thermostat": "Read thermostat's data"
+                "read_thermostat": "Read thermostat's data",
+                "read_camera": "Read welcome camera's' data",
+                "access_camera": "Access welcome camera's data",
+                "write_camera": "Write welcome camera's data"
             }
         },
         "password_oauth": {
@@ -1891,6 +2238,361 @@
                 }
             }
         },
+        
+        "NAWelcomeHomeDataResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NAWelcomeHomeData"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAWelcomeHomeData": {
+            "properties": {
+                "homes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeHomes"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/NAWelcomeUser"
+                },
+                "global_info": {
+                    "$ref": "#/definitions/NAWelcomeGlobalInfo"
+                }
+            }
+        },
+        
+        "NAWelcomeHomes": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Id of the home."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the home"
+                },
+                "persons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomePersons"
+                    }
+                },
+                "place": {
+                    "$ref": "#/definitions/NAWelcomePlace"
+                },
+                "cameras": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeCameras"
+                    }
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeEvents"
+                    }
+                },
+                "modules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeModules"
+                    }
+                }
+            }
+        },
+        "NAWelcomeUser": {
+            "properties": {
+                "lang": {
+                    "type": "string",
+                    "description": "user locale"
+                },
+                "reg_locale": {
+                    "type": "string",
+                    "description": "user regional preferences (used for displaying date)"
+                }
+            }
+        },
+        "NAWelcomeGlobalInfo": {
+            "properties": {
+                "show_tags": {
+                    "type": "boolean",
+                    "description": "show tags"
+                }
+            }
+        },
+        "NAWelcomePersons": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Id of the person."
+                },
+                "last_seen": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Time at which the person was last seen."
+                },
+                "out_of_sight": {
+                    "type": "boolean",
+                    "description": "True if the Person is out of sight."
+                },
+                "face": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeFace"
+                    }
+                },
+                "pseudo": {
+                    "type": "string",
+                    "description": "Name of the person, if pseudo is missing, person is unknown."
+                }
+            }
+        },
+        "NAWelcomeFace": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Id of the face."
+                },
+                "version": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Version of the face if user changed their photo."
+                },
+                "key": {
+                    "type": "string",
+                    "description": "Key for this face to use in getcamerapicture."
+                }               
+            }
+        },
+        "NAWelcomePlace": {
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City of the home."
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Country of the home."
+                },
+                "timezone": {
+                    "type": "string",
+                    "description": "Timezone of the home."
+                }
+            }
+        },     
+        "NAWelcomeCameras": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Id of the camera"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of the camera"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "If camera is monitoring (on/off)"
+                },
+                "vpn_url": {
+                    "type": "string",
+                    "description": "Only for scope access_camera. Address of the camera"
+                },
+                "is_local": {
+                    "type": "boolean",
+                    "description": "Only for scope access_camera. If Camera and application requesting the information are on the same IP (true/false)"
+                },
+                "sd_status": {
+                    "type": "string",
+                    "description": "If SD card status is ok (on/off)"
+                },
+                "alim_status": {
+                    "type": "string",
+                    "description": "If power supply is ok (on/off)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the camera"
+                }
+            }
+        },        
+        "NAWelcomeEvents": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Identifier of the event"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of events. Go to the Welcome page for further details."
+                },
+                "time": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Time of occurence of event"
+                },
+                "camera_id": {
+                    "type": "string",
+                    "description": "Camera that detected the event"
+                },
+                "person_id": {
+                    "type": "string",
+                    "description": "Id of the person the event is about (if any)"
+                },
+                "snapshot": {
+                    "$ref": "#/definitions/NAWelcomeSnapshot",
+                    "description": "Snapshot id, version and key. (Used in Getcamerapicture)"
+                },                
+                "video_id": {
+                    "type": "string",
+                    "description": "Identifier of the video"
+                },
+                "video_status": {
+                    "type": "string",
+                    "description": "Status of the video (recording, deleted or available)"
+                },
+                "is_arrival": {
+                    "type": "boolean",
+                    "description": "If person was considered away before being seen during this event"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "User facing event description"
+                },
+                "sub_type": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Subtypes of SD and Alim events. Go to Welcome page for further details."
+                }
+            }
+        },
+        "NAWelcomeSnapshot": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Id of the snapshot."
+                },
+                "version": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Version of the snapshot."
+                },
+                "key": {
+                    "type": "string",
+                    "description": "Key for this snapshot."
+                }               
+            }
+        },
+        "NAWelcomeModules": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "mac address of the module"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "NACamDoorTag for tags"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "name of the module (given by the user)"
+                },
+                "battery_percent": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "remaining battery percentage"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "status of the module"
+                },
+                "rf": {
+                    "type": "string",
+                    "description": "Radio status"
+                },
+                "last_activity": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Timestamp of last move detected by the module"
+                }     
+            }
+        },   
+        "NAWelcomeCameraPictureResponse": {
+            "properties": {
+                "body": {
+                    "type": "string",
+                    "format": "byte"
+                }
+            }
+        },        
+        "NAWelcomeEventsResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NAWelcomeEventsData"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "NAWelcomeEventsData": {
+            "properties": {
+                "events_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAWelcomeEvents"
+                    }
+                }
+            }
+        },             
+        "NAWelcomePersonsAwayResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },       
+        "NAWelcomeWebhookResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                }
+            }
+        },          
+                                    
         "NAObject": {
             "properties": {
                 "$id": {
