@@ -2363,10 +2363,7 @@
                     "description": "True if the Person is out of sight."
                 },
                 "face": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/NAWelcomeFace"
-                    }
+                    "$ref": "#/definitions/NAWelcomeFace"
                 },
                 "pseudo": {
                     "type": "string",
