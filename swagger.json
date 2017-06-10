@@ -601,7 +601,9 @@
                         ]
                     },
                     {
-                        "password_oauth": []
+                        "password_oauth": [
+                            "write_thermostat"
+                        ]
                     }
                 ]
             }
@@ -1012,7 +1014,14 @@
             "type": "oauth2",
             "tokenUrl": "https://api.netatmo.net/oauth2/token",
             "flow": "password",
-            "scopes": {}
+            "scopes": {
+                "read_station": "Read weather station's data",
+                "write_thermostat": "Configure the thermostat",
+                "read_thermostat": "Read thermostat's data",
+                "read_camera": "Read welcome camera's data",
+                "access_camera": "Access welcome camera",
+                "write_camera": "Write welcome camera's data"
+            }
         }
     },
     "definitions": {
