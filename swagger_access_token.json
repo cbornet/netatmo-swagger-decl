@@ -937,8 +937,7 @@
                     "format": "int32"
                 },
                 "plug_connected_boiler": {
-                    "type": "boolean",
-                    "default": false
+                    "type": "int32",
                 },
                 "udp_conn": {
                     "type": "boolean",
@@ -1514,6 +1513,10 @@
                     "format": "float",
                     "description": "Last temperature measure @ time_utc (in °C)"
                 },
+                "temp_trend": {
+                    "type": "string",
+                    "description": "Temperature evolution trend"
+                },
                 "date_max_temp": {
                     "type": "integer",
                     "format": "int32",
@@ -1558,6 +1561,10 @@
                     "type": "number",
                     "format": "float",
                     "description": "Last Sea level pressure measured @ time_utc (in mb)"
+                },
+                "pressure_trend": {
+                    "type": "string",
+                    "description": "Pressure evolution trend"
                 },
                 "Rain": {
                     "type": "number",
