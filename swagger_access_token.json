@@ -937,7 +937,8 @@
                     "format": "int32"
                 },
                 "plug_connected_boiler": {
-                    "type": "int32",
+                    "type": "integer",
+                    "format": "int32"
                 },
                 "udp_conn": {
                     "type": "boolean",
