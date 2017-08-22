@@ -1781,7 +1781,8 @@
                     "description": "It contains the current wifi status. The different thresholds to take into account are\nRSSI_THRESHOLD_0 = 86 bad signal\nRSSI_THRESHOLD_1 = 71 middle quality signal\nRSSI_THRESHOLD_2 = 56 good signal\n"
                 },
                 "plug_connected_boiler": {
-                    "type": "boolean"
+                    "type": "integer",
+                    "format": "int32"
                 },
                 "udp_conn": {
                     "type": "boolean"
