@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "1.1.0",
+        "version": "1.1.1",
         "title": "Netatmo",
         "description": "<h3>Welcome to the Netatmo swagger on-line documentation !</h3>This site is a complement to the official <a href=\"https://dev.netatmo.com/\">Netatmo developper documentation</a> using swagger to bring interactivity and easy testing of requests with the \"try it\" button (authenticate with the authorization code 0Auth2 flow by clicking the authenticate button in the methods). You can find the source code for this site can be found in the project <a href=\"https://github.com/cbornet/netatmo-swagger-ui\">netatmo-swagger-ui</a>. You can also use the online <a href=\"./swagger.json\">swagger declaration</a> file to generate code or static documentation (see <a href=\"https://github.com/cbornet/netatmo-swagger-api\">netatmo-swagger-api</a>).",
         "termsOfService": "https://dev.netatmo.com/dev/resources/legal/introduction",
@@ -33,6 +33,10 @@
         {
             "name": "station",
             "description": "Weather station specific methods"
+        },
+        {
+            "name": "healthyhomecoach",
+            "description": "Healthy Home Coach specific methods"
         },
         {
             "name": "thermostat",
@@ -328,6 +332,32 @@
                         "description": "Successful response",
                         "schema": {
                             "$ref": "#/definitions/NAStationDataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gethomecoachsdata": {
+            "get": {
+                "tags": [
+                    "healthyhomecoach"
+                ],
+                "description": "The method gethomecoachsdata Returns data from a user Healthy Home Coach Station (measures and device specific data).",
+                "operationId": "gethomecoachsdata",
+                "parameters": [
+                    {
+                        "name": "device_id",
+                        "in": "query",
+                        "description": "Id of the device you want to retrieve information of",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "$ref": "#/definitions/NAHealthyHomeCoachDataResponse"
                         }
                     }
                 }
@@ -1127,6 +1157,24 @@
                 }
             }
         },
+        "NAHealthyHomeCoachDataResponse": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "body": {
+                    "$ref": "#/definitions/NAHealthyHomeCoachDataBody"
+                },
+                "time_exec": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "time_server": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
         "NAThermStateResponse": {
             "properties": {
                 "status": {
@@ -1280,6 +1328,19 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/NAMain"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/NAUser"
+                }
+            }
+        },
+        "NAHealthyHomeCoachDataBody": {
+            "properties": {
+                "devices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NAHealthyHomeCoach"
                     }
                 },
                 "user": {
@@ -1873,6 +1934,64 @@
 
             }
         },
+        "NAHealthyHomeCoach": {
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "cipher_id": {
+                    "type": "string"
+                },
+                "last_status_store": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "place": {
+                    "$ref": "#/definitions/NAPlace"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Included in every device or module. It defines the type of the device/module. Its values are among :\nNHC: Healthy Home Coach\n"
+                },
+                "dashboard_data": {
+                    "description": "It contains all the measurements that can be displayed on the dashboard",
+                    "$ref": "#/definitions/NADashboardData"
+                },
+                "data_type": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "co2_calibrating": {
+                    "type": "boolean"
+                },
+                "date_setup": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_setup": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "firmware": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "last_upgrade": {
+                    "type": "integer",
+                    "format": "int32"
+                },                
+                "wifi_status": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "It contains the current wifi status. The different thresholds to take into account are\nRSSI_THRESHOLD_0 = 86 bad signal\nRSSI_THRESHOLD_1 = 71 middle quality signal\nRSSI_THRESHOLD_2 = 56 good signal\n"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "NAHouseModel": {
             "properties": {
                 "algo_type": {
@@ -2243,6 +2362,11 @@
                     "type": "integer",
                     "format": "int32",
                     "description": "Speed of the last 5 min highest gust wind"
+                },
+                "health_idx": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Current health index: 0 = Healthy, 1 = Fine, 2 = Fair, 3 = Poor, 4 = Unhealthy"
                 }
             }
         },
