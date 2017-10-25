@@ -93,7 +93,9 @@ paths:
         - code_oauth:
             - read_thermostat
             - read_station
-        - password_oauth: []
+        - password_oauth:
+            - read_thermostat
+            - read_station
   /getmeasure:
     get:
       tags:
@@ -257,7 +259,9 @@ paths:
         - code_oauth:
             - read_thermostat
             - read_station
-        - password_oauth: []
+        - password_oauth:
+            - read_thermostat
+            - read_station
   /getthermostatsdata:
     get:
       tags:
@@ -275,6 +279,11 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAThermostatDataResponse'
+      security:
+        - code_oauth:
+            - read_thermostat
+        - password_oauth:
+            - read_thermostat
   /getstationsdata:
     get:
       tags:
@@ -292,6 +301,11 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAStationDataResponse'
+      security:
+        - code_oauth:
+            - read_station
+        - password_oauth:
+            - read_station
   /gethomecoachsdata:
     get:
       tags:
@@ -309,6 +323,11 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAHealthyHomeCoachDataResponse'
+      security:
+        - code_oauth:
+            - read_homecoach
+        - password_oauth:
+            - read_homecoach
   /getthermstate:
     get:
       tags:
@@ -336,7 +355,8 @@ paths:
       security:
         - code_oauth:
             - read_thermostat
-        - password_oauth: []
+        - password_oauth:
+            - read_thermostat
   /syncschedule:
     post:
       tags:
@@ -368,7 +388,8 @@ paths:
       security:
         - code_oauth:
             - write_thermostat
-        - password_oauth: []
+        - password_oauth:
+            - write_thermostat
   /setthermpoint:
     post:
       tags:
@@ -418,7 +439,8 @@ paths:
       security:
         - code_oauth:
             - write_thermostat
-        - password_oauth: []
+        - password_oauth:
+            - write_thermostat
   /switchschedule:
     post:
       tags:
@@ -450,7 +472,8 @@ paths:
       security:
         - code_oauth:
             - write_thermostat
-        - password_oauth: []
+        - password_oauth:
+            - write_thermostat
   /createnewschedule:
     post:
       tags:
@@ -482,7 +505,8 @@ paths:
       security:
         - code_oauth:
             - write_thermostat
-        - password_oauth: []
+        - password_oauth:
+            - write_thermostat
   /partnerdevices:
     get:
       tags:
@@ -525,7 +549,9 @@ paths:
         - code_oauth:
             - access_camera
             - read_camera
-        - password_oauth: []
+        - password_oauth:
+            - access_camera
+            - read_camera
   /getcamerapicture:
     get:
       tags:
@@ -582,7 +608,9 @@ paths:
         - code_oauth:
             - access_camera
             - read_camera
-        - password_oauth: []
+        - password_oauth:
+            - access_camera
+            - read_camera
   /getlasteventof:
     get:
       tags:
@@ -616,7 +644,9 @@ paths:
         - code_oauth:
             - access_camera
             - read_camera
-        - password_oauth: []
+        - password_oauth:
+            - access_camera
+            - read_camera
   /getnextevents:
     get:
       tags:
@@ -650,7 +680,9 @@ paths:
         - code_oauth:
             - access_camera
             - read_camera
-        - password_oauth: []
+        - password_oauth:
+            - access_camera
+            - read_camera
   /setpersonsaway:
     post:
       tags:
@@ -678,7 +710,8 @@ paths:
       security:
         - code_oauth:
             - write_camera
-        - password_oauth: []
+        - password_oauth:
+            - write_camera
   /setpersonshome:
     post:
       tags:
@@ -706,7 +739,8 @@ paths:
       security:
         - code_oauth:
             - write_camera
-        - password_oauth: []
+        - password_oauth:
+            - write_camera
   /addwebhook:
     get:
       tags:
@@ -769,11 +803,19 @@ securityDefinitions:
       read_camera: Read welcome camera's data
       access_camera: Access welcome camera
       write_camera: Write welcome camera's data
+      read_homecoach: Read data coming from Healthy Home Coach
   password_oauth:
     type: oauth2
     tokenUrl: 'https://api.netatmo.net/oauth2/token'
     flow: password
-    scopes: {}
+    scopes:
+      read_station: Read weather station's data
+      write_thermostat: Configure the thermostat
+      read_thermostat: Read thermostat's data
+      read_camera: Read welcome camera's data
+      access_camera: Access welcome camera
+      write_camera: Write welcome camera's data
+      read_homecoach: Read data coming from Healthy Home Coach
 definitions:
   NAOkResponse:
     properties:
