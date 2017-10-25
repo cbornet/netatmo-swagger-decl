@@ -162,7 +162,6 @@ paths:
         - name: device_id
           in: query
           description: Id of the device whose module's measurements you want to retrieve. This _id can be found in the user's devices field.
-          example: '70:ee:50:09:f0:xx'
           required: true
           type: string
         - name: module_id
