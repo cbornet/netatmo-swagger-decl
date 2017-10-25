@@ -36,12 +36,13 @@ tags:
     description: Public stations specific methods
   - name: partner
     description: Partner API specific methods
+  - name: deprecated
+    description: These methods are no longer maintained nor supported
 paths:
   /getuser:
     get:
       tags:
-        - station
-        - thermostat
+        - deprecated
       description: |
         The method getuser returns information about a user such as prefered language, prefered units, and list of devices.
       operationId: getuser
@@ -57,9 +58,7 @@ paths:
   /devicelist:
     get:
       tags:
-        - station
-        - thermostat
-        - partner
+        - deprecated
       description: |
         The method devicelist returns the list of devices owned by the user, and their modules.
         A device is identified by its _id (which is its mac address) and each device may have one, several or no modules, also identified by an _id.
@@ -331,8 +330,7 @@ paths:
   /getthermstate:
     get:
       tags:
-        - thermostat
-        - partner
+        - deprecated
       description: 'The method getthermstate returns the last Thermostat measurements, its current weekly schedule, and, if present, its current manual temperature setpoint.'
       operationId: getthermstate
       parameters:
@@ -544,7 +542,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeHomeDataResponse'
-      deprecated: false
       security:
         - code_oauth:
             - access_camera
@@ -576,7 +573,6 @@ paths:
           schema:
             type: string
             format: byte
-      deprecated: false
       security:
         - code_oauth: []
         - password_oauth: []
@@ -603,7 +599,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeEventResponse'
-      deprecated: false
       security:
         - code_oauth:
             - access_camera
@@ -639,7 +634,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeEventResponse'
-      deprecated: false
       security:
         - code_oauth:
             - access_camera
@@ -675,7 +669,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeEventResponse'
-      deprecated: false
       security:
         - code_oauth:
             - access_camera
@@ -706,7 +699,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomePersonsAwayResponse'
-      deprecated: false
       security:
         - code_oauth:
             - write_camera
@@ -735,7 +727,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomePersonsHomeResponse'
-      deprecated: false
       security:
         - code_oauth:
             - write_camera
@@ -764,7 +755,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeWebhookResponse'
-      deprecated: false
       security:
         - code_oauth: []
         - password_oauth: []
@@ -786,7 +776,6 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/NAWelcomeWebhookResponse'
-      deprecated: false
       security:
         - code_oauth: []
         - password_oauth: []
