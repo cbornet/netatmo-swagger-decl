@@ -1,11 +1,15 @@
-os:
-    - linux
 language: node_js
 node_js:
-    - "6.11.0"
-install:
-    - npm install -g swagger-tools
-script:
-    - swagger-tools validate swagger.json
-    - swagger-tools validate swagger_access_token.json
-
+  - "node"
+deploy:
+  - skip_cleanup: true
+    provider: script
+    script: npm run deploy
+    on:
+      branch: master
+  - skip_cleanup: true
+    provider: script
+    script: npm run deploy-branch
+    on:
+      all_branches: true
+      condition: '"$TRAVIS_BRANCH" != "master" && "$TRAVIS_BRANCH" != "gh-pages"'
