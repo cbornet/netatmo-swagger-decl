@@ -39,6 +39,62 @@ tags:
   - name: deprecated
     description: These methods are no longer maintained nor supported
 paths:
+  /getpublicdata:
+    get:
+      tags:
+        - public
+      description: Retrieves publicly shared weather data from Outdoor Modules within a predefined area.
+      operationId: getpublicdata
+      parameters:
+        - name: lat_ne
+          in: query
+          description: Latitude of the north east corner of the requested area. -85 <= lat_ne <= 85 and lat_ne>lat_sw
+          required: true
+          type: integer
+          format: int32
+        - name: lon_ne
+          in: query
+          description: Longitude of the north east corner of the requested area. -180 <= lon_ne <= 180 and lon_ne>lon_sw
+          required: true
+          type: integer
+          format: int32
+        - name: lat_sw
+          in: query
+          description: Latitude of the south west corner of the requested area. -85 <= lat_sw <= 85
+          required: true
+          type: integer
+          format: int32
+        - name: lon_sw
+          in: query
+          description: Longitude of the south west corner of the requested area. -180 <= lon_sw <= 180
+          required: true
+          type: integer
+          format: int32
+        - name: required_data
+          in: query
+          description: To filter stations based on relevant measurements you want (e.g. rain will only return stations with rain gauges). Default is no filter. You can find all measurements available on the Thermostat page.
+          type: array
+          items:
+            type: string
+            enum:
+              - temperature
+              - humidity
+              - pressure
+              - wind
+              - rain
+          collectionFormat: csv
+        - name: filter
+          in: query
+          type: boolean
+          description: True to exclude stations with abnormal temperature measures. Default is false.
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAPublicDataResponse'
+      security:
+        - code_oauth: []
+        - password_oauth: []
   /getuser:
     get:
       tags:
@@ -67,7 +123,6 @@ paths:
         - name: app_type
           in: query
           description: Defines which device type will be returned by devicelist. It could be app_thermostat or app_station (by default if not provided)
-          required: false
           type: string
           enum:
             - app_thermostat
@@ -75,12 +130,10 @@ paths:
         - name: device_id
           in: query
           description: Specify a device_id if you want to retrieve only this device informations.
-          required: false
           type: string
         - name: get_favorites
           in: query
           description: 'When set to "true", the favorite devices of the user are returned. This flag is available only if the devices requested are Weather Stations.'
-          required: false
           type: boolean
       responses:
         '200':
@@ -109,12 +162,12 @@ paths:
         - name: device_id
           in: query
           description: Id of the device whose module's measurements you want to retrieve. This _id can be found in the user's devices field.
+          example: '70:ee:50:09:f0:xx'
           required: true
           type: string
         - name: module_id
           in: query
           description: If you don't specify any module_id you will retrieve the device's measurements. If you specify a module_id you will retrieve the module's measurements.
-          required: false
           type: string
         - name: scale
           in: query
@@ -164,6 +217,10 @@ paths:
               - Pressure
               - Noise
               - Rain
+              - WindStrength
+              - WindAngle
+              - Guststrength
+              - GustAngle
               - Sp_Temperature
               - BoilerOn
               - BoilerOff
@@ -185,6 +242,7 @@ paths:
               - date_max_noise
               - date_min_co2
               - date_max_co2
+              - date_max_gust
               - sum_rain
               - sum_boiler_on
               - sum_boiler_off
@@ -193,21 +251,18 @@ paths:
           in: query
           description: |
             Starting timestamp (utc) of the requested measurements.
-            Please note measurement retrieving is limited to 1024 measurements. 
-          required: false
+            Please note measurement retrieving is limited to 1024 measurements.
           type: integer
           format: int32
         - name: date_end
           in: query
           description: |
             Ending timestamp (utc) of the request measurements.
-            If you want only the last measurement, do not provide date_begin, and set date_end to `last`. 
-          required: false
+            If you want only the last measurement, do not provide date_begin, and set date_end to `last`.
           type: string
         - name: limit
           in: query
           description: Limits the number of measurements returned (default & max is 1024)
-          required: false
           type: integer
           format: int32
           maximum: 1024
@@ -239,7 +294,6 @@ paths:
             "time_exec": 0.014238119125366}
             ```
             Default value is `true`.
-          required: false
           type: boolean
         - name: real_time
           in: query
@@ -247,7 +301,6 @@ paths:
             In scales higher than max, since the data is aggregated, the timestamps returned are by default offset by +(scale/2).
             For instance, if you ask for measurements at a daily scale, you will receive data timestamped at 12:00 if real_time is set to `false` (default case), and timestamped at 00:00 if real_time is set to `true`.
             NB : The servers always store data with real_time set to `true` and data are offset by this parameter AFTER having being time-filtered, thus you could have data after date_end if real_time is set to `false`.
-          required: false
           type: boolean
       responses:
         '200':
@@ -271,7 +324,6 @@ paths:
         - name: device_id
           in: query
           description: Id of the device you want to retrieve information of
-          required: false
           type: string
       responses:
         '200':
@@ -293,7 +345,6 @@ paths:
         - name: device_id
           in: query
           description: Id of the device you want to retrieve information of
-          required: false
           type: string
       responses:
         '200':
@@ -315,7 +366,6 @@ paths:
         - name: device_id
           in: query
           description: Id of the device you want to retrieve information of
-          required: false
           type: string
       responses:
         '200':
@@ -420,13 +470,11 @@ paths:
         - name: setpoint_endtime
           in: query
           description: 'When using the manual or max setpoint_mode, this parameter defines when the setpoint expires.'
-          required: false
           type: integer
           format: int32
         - name: setpoint_temp
           in: query
           description: 'When using the manual setpoint_mode, this parameter defines the temperature setpoint (in Celcius) to use.'
-          required: false
           type: number
           format: float
       responses:
@@ -530,12 +578,10 @@ paths:
         - name: home_id
           in: query
           description: Specify if you're looking for the events of a specific Home.
-          required: false
           type: string
         - name: size
           in: query
           description: Number of events to retrieve. Default is `30`.
-          required: false
           type: integer
       responses:
         '200':
@@ -627,7 +673,6 @@ paths:
         - name: offset
           in: query
           description: Number of events to retrieve. Default is 30.
-          required: false
           type: integer
       responses:
         '200':
@@ -662,7 +707,6 @@ paths:
         - name: size
           in: query
           description: Number of events to retrieve. Default is 30.
-          required: false
           type: integer
       responses:
         '200':
@@ -691,8 +735,7 @@ paths:
           type: string
         - name: person_id
           in: query
-          description: 'If a person_id is specified, that person will be set as ''Away''. If no person_id is specified, the Home will be set as ''Empty''.'
-          required: false
+          description: 'If a person_id is specified, that person will be set as ''Away''. If no person_id is specified, the Home will be set as ''Empty''.'         
           type: string
       responses:
         '200':
@@ -810,6 +853,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       time_exec:
         type: number
         format: double
@@ -818,10 +862,82 @@ definitions:
         format: int32
       body:
         type: string
+  NAPublicDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/NAPublicData'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAPublicData:
+    properties:
+      _id:
+        type: string
+        description: id of the station
+        example: '70:ee:50:09:f0:xx'
+      place:
+        description: Information about the station location (latitude/longitude of the station, altitude (meters), timezone)
+        $ref: '#/definitions/NAPlace'
+      mark:
+        type: integer
+      modules:
+        type: array
+        items:
+          type: string
+      module_types:
+        type: object
+        description: Latest measurements of the station, organized by module
+        additionalProperties:
+          type: string
+      measures:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/NAMeasure'
+  NAMeasure:
+    properties:
+      res:
+        additionalProperties:
+          type: array
+          items:
+            type: number
+            format: double
+      type:
+        type: array
+        items:
+          type: string
+      rain_60min:
+        type: number
+      rain_24h:
+        type: number
+      rain_live:
+        type: number
+      rain_utc:
+        type: integer
+        format: int64
+      wind_strength:
+        type: number
+      wind_angle:
+        type: number
+      gust_strength:
+        type: number
+      gust_angle:
+        type: number
+      wind_timeutc":
+        type: integer
+        format: int64
   NAUserResponse:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAUser'
       time_exec:
@@ -834,6 +950,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NADeviceListBody'
       time_exec:
@@ -846,6 +963,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         type: array
         items:
@@ -860,6 +978,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAThermostatDataBody'
       time_exec:
@@ -872,6 +991,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAStationDataBody'
       time_exec:
@@ -884,6 +1004,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAHealthyHomeCoachDataBody'
       time_exec:
@@ -896,6 +1017,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAThermStateBody'
       time_exec:
@@ -908,6 +1030,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NANewScheduleBody'
       time_exec:
@@ -920,6 +1043,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         type: array
         items:
@@ -1449,6 +1573,7 @@ definitions:
     properties:
       _id:
         type: string
+        example: '70:ee:50:09:f0:xx'
       firmware:
         type: integer
         format: int32
@@ -1879,6 +2004,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAWelcomeHomeData'
       time_exec:
@@ -2080,6 +2206,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       body:
         $ref: '#/definitions/NAWelcomeEventData'
       time_exec:
@@ -2098,6 +2225,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       time_exec:
         type: number
         format: double
@@ -2108,6 +2236,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       time_exec:
         type: number
         format: double
@@ -2118,6 +2247,7 @@ definitions:
     properties:
       status:
         type: string
+        example: ok
       time_exec:
         type: number
         format: double
