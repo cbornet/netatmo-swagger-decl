@@ -1,6 +1,6 @@
 # Netatmo OpenAPI Specification
 [![Build Status](https://travis-ci.org/cbornet/netatmo-swagger-decl.svg?branch=master)](https://travis-ci.org/cbornet/netatmo-swagger-decl)
-[![swagger](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/master/swagger.json)](http://editor.swagger.io/?url=https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/master/swagger.json)
+[![swagger](https://online.swagger.io/validator?url=https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/master/spec/swagger.yaml)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/master/spec/swagger.yaml)
 
 Swagger declaration file for the Netatmo API
 
