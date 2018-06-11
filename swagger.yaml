@@ -1,0 +1,2275 @@
+swagger: '2.0'
+info:
+  version: 1.1.3
+  title: Netatmo
+  description: |
+    <h3>Welcome to the Netatmo swagger on-line documentation !</h3>
+    This site is a complement to the official <a href="https://dev.netatmo.com/">Netatmo developper documentation</a> using swagger to bring interactivity and easy testing of requests with the "try it" button (authenticate with the authorization code OAuth2 flow by clicking the authenticate button in the methods). You can find the source code for this site can be found in the project <a href="https://github.com/cbornet/netatmo-swagger-ui">netatmo-swagger-ui</a>. You can also use the online <a href="./swagger.json">swagger declaration</a> file to generate code or static documentation (see <a href="https://github.com/cbornet/netatmo-swagger-api">netatmo-swagger-api</a>).
+  termsOfService: 'https://dev.netatmo.com/dev/resources/legal/introduction'
+  license:
+    name: 'Netatmo : Terms of Service'
+    url: 'https://dev.netatmo.com/dev/resources/legal/introduction'
+  contact:
+    name: Netatmo
+    email: contact-api@netatmo.com
+externalDocs:
+  description: Netatmo reference API documentation
+  url: 'https://dev.netatmo.com/dev/resources/technical/reference'
+host: api.netatmo.net
+basePath: /api
+schemes:
+  - https
+consumes:
+  - text/plain
+produces:
+  - application/json
+tags:
+  - name: station
+    description: Weather station specific methods
+  - name: healthyhomecoach
+    description: Healthy Home Coach specific methods
+  - name: thermostat
+    description: Thermostat specific methods
+  - name: welcome
+    description: Welcome specific methods
+  - name: public
+    description: Public stations specific methods
+  - name: partner
+    description: Partner API specific methods
+  - name: deprecated
+    description: These methods are no longer maintained nor supported
+paths:
+  /getpublicdata:
+    get:
+      tags:
+        - public
+      description: Retrieves publicly shared weather data from Outdoor Modules within a predefined area.
+      operationId: getpublicdata
+      parameters:
+        - name: lat_ne
+          in: query
+          description: Latitude of the north east corner of the requested area. -85 <= lat_ne <= 85 and lat_ne>lat_sw
+          required: true
+          type: integer
+          format: int32
+        - name: lon_ne
+          in: query
+          description: Longitude of the north east corner of the requested area. -180 <= lon_ne <= 180 and lon_ne>lon_sw
+          required: true
+          type: integer
+          format: int32
+        - name: lat_sw
+          in: query
+          description: Latitude of the south west corner of the requested area. -85 <= lat_sw <= 85
+          required: true
+          type: integer
+          format: int32
+        - name: lon_sw
+          in: query
+          description: Longitude of the south west corner of the requested area. -180 <= lon_sw <= 180
+          required: true
+          type: integer
+          format: int32
+        - name: required_data
+          in: query
+          description: To filter stations based on relevant measurements you want (e.g. rain will only return stations with rain gauges). Default is no filter. You can find all measurements available on the Thermostat page.
+          type: array
+          items:
+            type: string
+            enum:
+              - temperature
+              - humidity
+              - pressure
+              - wind
+              - rain
+          collectionFormat: csv
+        - name: filter
+          in: query
+          type: boolean
+          description: True to exclude stations with abnormal temperature measures. Default is false.
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAPublicDataResponse'
+      security:
+        - code_oauth: []
+        - password_oauth: []
+  /getuser:
+    get:
+      tags:
+        - deprecated
+      description: |
+        The method getuser returns information about a user such as prefered language, prefered units, and list of devices.
+      operationId: getuser
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAUserResponse'
+      deprecated: true
+      security:
+        - code_oauth: []
+        - password_oauth: []
+  /devicelist:
+    get:
+      tags:
+        - deprecated
+      description: |
+        The method devicelist returns the list of devices owned by the user, and their modules.
+        A device is identified by its _id (which is its mac address) and each device may have one, several or no modules, also identified by an _id.
+      operationId: devicelist
+      parameters:
+        - name: app_type
+          in: query
+          description: Defines which device type will be returned by devicelist. It could be app_thermostat or app_station (by default if not provided)
+          type: string
+          enum:
+            - app_thermostat
+            - app_station
+        - name: device_id
+          in: query
+          description: Specify a device_id if you want to retrieve only this device informations.
+          type: string
+        - name: get_favorites
+          in: query
+          description: 'When set to "true", the favorite devices of the user are returned. This flag is available only if the devices requested are Weather Stations.'
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NADeviceListResponse'
+      deprecated: true
+      security:
+        - code_oauth:
+            - read_thermostat
+            - read_station
+        - password_oauth:
+            - read_thermostat
+            - read_station
+  /getmeasure:
+    get:
+      tags:
+        - station
+        - thermostat
+        - partner
+        - public
+      description: |
+        The method getmeasure returns the measurements of a device or a module.
+      operationId: getmeasure
+      parameters:
+        - name: device_id
+          in: query
+          description: Id of the device whose module's measurements you want to retrieve. This _id can be found in the user's devices field.
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: If you don't specify any module_id you will retrieve the device's measurements. If you specify a module_id you will retrieve the module's measurements.
+          type: string
+        - name: scale
+          in: query
+          description: |
+            Defines the time interval between two measurements.
+            Possible values :
+            max -> every value stored will be returned
+            30min -> 1 value every 30 minutes
+            1hour -> 1 value every hour
+            3hours -> 1 value every 3 hours
+            1day -> 1 value per day
+            1week -> 1 value per week
+            1month -> 1 value per month
+          required: true
+          type: string
+          enum:
+            - max
+            - 30min
+            - 1hour
+            - 3hours
+            - 1day
+            - 1week
+            - 1month
+        - name: type
+          in: query
+          description: |
+            Measures you are interested in. Data you can request depends on the scale.
+            **For Weather Station:**
+              * max -> Temperature (°C), CO2 (ppm), Humidity (%), Pressure (mbar), Noise (db), Rain (mm), WindStrength (km/h), WindAngle (angles), Guststrength (km/h), GustAngle (angles)
+              * 30min, 1hour, 3hours -> Same as above + min_temp, max_temp, min_hum, max_hum, min_pressure, max_pressure, min_noise, max_noise, sum_rain, date_max_gust
+              * 1day, 1week, 1month -> Same as above + date_min_temp, date_max_temp, date_min_hum, date_max_hum, date_min_pressure, date_max_pressure, date_min_noise, date_max_noise, date_min_co2, date_max_co2
+
+            **For Thermostat:**
+              * max -> temperature (°C), sp_temperature (°C), boileron (sec), boileroff (sec)
+              * 30min, 1hour, 3hours -> temperature, sp_temperature, min_temp,
+            max_temp, sum_boiler_on, sum_boiler_off
+              * 1day, 1week, 1month -> temperature, min_temp, date_min_temp,
+            max_temp, sum_boiler_on, sum_boiler_off
+          required: true
+          type: array
+          items:
+            type: string
+            enum:
+              - Temperature
+              - CO2
+              - Humidity
+              - Pressure
+              - Noise
+              - Rain
+              - WindStrength
+              - WindAngle
+              - Guststrength
+              - GustAngle
+              - Sp_Temperature
+              - BoilerOn
+              - BoilerOff
+              - min_temp
+              - date_min_temp
+              - max_temp
+              - date_max_temp
+              - min_hum
+              - date_min_hum
+              - max_hum
+              - date_max_hum
+              - min_pressure
+              - date_min_pressure
+              - max_pressure
+              - date_max_pressure
+              - min_noise
+              - date_min_noise
+              - max_noise
+              - date_max_noise
+              - date_min_co2
+              - date_max_co2
+              - date_max_gust
+              - sum_rain
+              - sum_boiler_on
+              - sum_boiler_off
+          collectionFormat: csv
+        - name: date_begin
+          in: query
+          description: |
+            Starting timestamp (utc) of the requested measurements.
+            Please note measurement retrieving is limited to 1024 measurements.
+          type: integer
+          format: int32
+        - name: date_end
+          in: query
+          description: |
+            Ending timestamp (utc) of the request measurements.
+            If you want only the last measurement, do not provide date_begin, and set date_end to `last`.
+          type: string
+        - name: limit
+          in: query
+          description: Limits the number of measurements returned (default & max is 1024)
+          type: integer
+          format: int32
+          maximum: 1024
+        - name: optimize
+          in: query
+          description: |
+            Allows you to choose the format of the answer.
+            If you build a mobile app and bandwith usage is an issue, use `optimize = true`.
+            Use `optimize = false`, for an easier parse. In this case, values are indexed by sorted timestamp.
+            Example of un-optimized response :
+            ```json
+            {"status": "ok", 
+              "body": {
+                "1347575400": [18.3,39],
+                "1347586200": [20.6,48]
+              },
+            "time_exec": 0.012136936187744}
+            ```
+            If optimize is set true, measurements are returned as an array of series of regularly spaced measurements. Each series is defined by a beginning time beg_time and a step between measurements, step_time:
+            ```json
+            {"status": "ok",
+              "body": [
+                {"beg_time": 1347575400,
+                 "step_time": 10800,
+                 "value": 
+                    [[18.3,39],
+                    [ 20.6,48]]
+                }],
+            "time_exec": 0.014238119125366}
+            ```
+            Default value is `true`.
+          type: boolean
+        - name: real_time
+          in: query
+          description: |
+            In scales higher than max, since the data is aggregated, the timestamps returned are by default offset by +(scale/2).
+            For instance, if you ask for measurements at a daily scale, you will receive data timestamped at 12:00 if real_time is set to `false` (default case), and timestamped at 00:00 if real_time is set to `true`.
+            NB : The servers always store data with real_time set to `true` and data are offset by this parameter AFTER having being time-filtered, thus you could have data after date_end if real_time is set to `false`.
+          type: boolean
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAMeasureResponse'
+      security:
+        - code_oauth:
+            - read_thermostat
+            - read_station
+        - password_oauth:
+            - read_thermostat
+            - read_station
+  /getthermostatsdata:
+    get:
+      tags:
+        - thermostat
+      description: The method getthermostatsdata returns information about user's thermostats such as their last measurements.
+      operationId: getthermostatsdata
+      parameters:
+        - name: device_id
+          in: query
+          description: Id of the device you want to retrieve information of
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAThermostatDataResponse'
+      security:
+        - code_oauth:
+            - read_thermostat
+        - password_oauth:
+            - read_thermostat
+  /getstationsdata:
+    get:
+      tags:
+        - station
+      description: The method getstationsdata Returns data from a user Weather Stations (measures and device specific data).
+      operationId: getstationsdata
+      parameters:
+        - name: device_id
+          in: query
+          description: Id of the device you want to retrieve information of
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAStationDataResponse'
+      security:
+        - code_oauth:
+            - read_station
+        - password_oauth:
+            - read_station
+  /gethomecoachsdata:
+    get:
+      tags:
+        - healthyhomecoach
+      description: The method gethomecoachsdata Returns data from a user Healthy Home Coach Station (measures and device specific data).
+      operationId: gethomecoachsdata
+      parameters:
+        - name: device_id
+          in: query
+          description: Id of the device you want to retrieve information of
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAHealthyHomeCoachDataResponse'
+      security:
+        - code_oauth:
+            - read_homecoach
+        - password_oauth:
+            - read_homecoach
+  /getthermstate:
+    get:
+      tags:
+        - deprecated
+      description: 'The method getthermstate returns the last Thermostat measurements, its current weekly schedule, and, if present, its current manual temperature setpoint.'
+      operationId: getthermstate
+      parameters:
+        - name: device_id
+          in: query
+          description: The relay id
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: The thermostat id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAThermStateResponse'
+      deprecated: true
+      security:
+        - code_oauth:
+            - read_thermostat
+        - password_oauth:
+            - read_thermostat
+  /syncschedule:
+    post:
+      tags:
+        - thermostat
+      description: The method syncschedule changes the Thermostat weekly schedule.
+      operationId: syncschedule
+      parameters:
+        - name: device_id
+          in: query
+          description: The relay id
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: The thermostat id
+          required: true
+          type: string
+        - in: body
+          name: therm_program
+          description: 'The thermostat program (zones, timetable and name)'
+          required: true
+          schema:
+            $ref: '#/definitions/NAThermProgram'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAOkResponse'
+      security:
+        - code_oauth:
+            - write_thermostat
+        - password_oauth:
+            - write_thermostat
+  /setthermpoint:
+    post:
+      tags:
+        - thermostat
+      description: The method setthermpoint changes the Thermostat manual temperature setpoint.
+      operationId: setthermpoint
+      parameters:
+        - name: device_id
+          in: query
+          description: The relay id
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: The thermostat id
+          required: true
+          type: string
+        - name: setpoint_mode
+          in: query
+          description: Chosen setpoint_mode
+          required: true
+          type: string
+          enum:
+            - program
+            - away
+            - hg
+            - manual
+            - 'off'
+            - max
+        - name: setpoint_endtime
+          in: query
+          description: 'When using the manual or max setpoint_mode, this parameter defines when the setpoint expires.'
+          type: integer
+          format: int32
+        - name: setpoint_temp
+          in: query
+          description: 'When using the manual setpoint_mode, this parameter defines the temperature setpoint (in Celcius) to use.'
+          type: number
+          format: float
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAOkResponse'
+      security:
+        - code_oauth:
+            - write_thermostat
+        - password_oauth:
+            - write_thermostat
+  /switchschedule:
+    post:
+      tags:
+        - thermostat
+      description: The method switchschedule switches the Thermostat's schedule to another existing schedule.
+      operationId: switchschedule
+      parameters:
+        - name: device_id
+          in: query
+          description: The relay id
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: The thermostat id
+          required: true
+          type: string
+        - name: schedule_id
+          in: query
+          description: |
+            The schedule id. It can be found in the getthermstate response, under the keys `therm_program_backup` and `therm_program`.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAOkResponse'
+      security:
+        - code_oauth:
+            - write_thermostat
+        - password_oauth:
+            - write_thermostat
+  /createnewschedule:
+    post:
+      tags:
+        - thermostat
+      description: The method createnewschedule creates a new schedule stored in the backup list.
+      operationId: createnewschedule
+      parameters:
+        - name: device_id
+          in: query
+          description: The relay id
+          required: true
+          type: string
+        - name: module_id
+          in: query
+          description: The thermostat id
+          required: true
+          type: string
+        - in: body
+          name: therm_program
+          description: The thermostat program (zones and timetable)
+          required: true
+          schema:
+            $ref: '#/definitions/NAThermProgram'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NANewScheduleResponse'
+      security:
+        - code_oauth:
+            - write_thermostat
+        - password_oauth:
+            - write_thermostat
+  /partnerdevices:
+    get:
+      tags:
+        - partner
+      description: The method partnerdevices returns the list of device_id to which your partner application has access to.
+      operationId: partnerdevices
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAPartnerDevicesResponse'
+      security:
+        - code_oauth: []
+        - password_oauth: []
+  /gethomedata:
+    get:
+      tags:
+        - welcome
+      description: |
+        Returns information about users homes and cameras.
+      operationId: gethomedata
+      parameters:
+        - name: home_id
+          in: query
+          description: Specify if you're looking for the events of a specific Home.
+          type: string
+        - name: size
+          in: query
+          description: Number of events to retrieve. Default is `30`.
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeHomeDataResponse'
+      security:
+        - code_oauth:
+            - access_camera
+            - read_camera
+        - password_oauth:
+            - access_camera
+            - read_camera
+  /getcamerapicture:
+    get:
+      tags:
+        - welcome
+      description: |
+        Returns the snapshot associated to an event.
+      operationId: getcamerapicture
+      parameters:
+        - name: image_id
+          in: query
+          description: 'id of the image (can be retrieved as ''id'' in ''face'' in Gethomedata, or as ''id'' in ''snapshot'' in Getnextevents, Getlasteventof and Geteventsuntil)'
+          required: true
+          type: string
+        - name: key
+          in: query
+          description: Security key to access snapshots.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: string
+            format: byte
+      security:
+        - code_oauth: []
+        - password_oauth: []
+  /geteventsuntil:
+    get:
+      tags:
+        - welcome
+      description: |
+        Returns the snapshot associated to an event.
+      operationId: geteventsuntil
+      parameters:
+        - name: home_id
+          in: query
+          description: ID of the Home you're interested in
+          required: true
+          type: string
+        - name: event_id
+          in: query
+          description: Your request will retrieve all the events until this one
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeEventResponse'
+      security:
+        - code_oauth:
+            - access_camera
+            - read_camera
+        - password_oauth:
+            - access_camera
+            - read_camera
+  /getlasteventof:
+    get:
+      tags:
+        - welcome
+      description: |
+        Returns most recent events.
+      operationId: getlasteventof
+      parameters:
+        - name: home_id
+          in: query
+          description: ID of the Home you're interested in
+          required: true
+          type: string
+        - name: person_id
+          in: query
+          description: Your request will retrieve all events of the given home until the most recent event of the given person
+          required: true
+          type: string
+        - name: offset
+          in: query
+          description: Number of events to retrieve. Default is 30.
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeEventResponse'
+      security:
+        - code_oauth:
+            - access_camera
+            - read_camera
+        - password_oauth:
+            - access_camera
+            - read_camera
+  /getnextevents:
+    get:
+      tags:
+        - welcome
+      description: |
+        Returns previous events.
+      operationId: getnextevents
+      parameters:
+        - name: home_id
+          in: query
+          description: ID of the Home you're interested in
+          required: true
+          type: string
+        - name: event_id
+          in: query
+          description: Your request will retrieve events occured before this one
+          required: true
+          type: string
+        - name: size
+          in: query
+          description: Number of events to retrieve. Default is 30.
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeEventResponse'
+      security:
+        - code_oauth:
+            - access_camera
+            - read_camera
+        - password_oauth:
+            - access_camera
+            - read_camera
+  /setpersonsaway:
+    post:
+      tags:
+        - welcome
+      description: |
+        Sets a person as 'Away' or the Home as 'Empty'. The event will be added to the user’s timeline.
+      operationId: setpersonsaway
+      parameters:
+        - name: home_id
+          in: query
+          description: ID of the Home you're interested in
+          required: true
+          type: string
+        - name: person_id
+          in: query
+          description: 'If a person_id is specified, that person will be set as ''Away''. If no person_id is specified, the Home will be set as ''Empty''.'
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomePersonsAwayResponse'
+      security:
+        - code_oauth:
+            - write_camera
+        - password_oauth:
+            - write_camera
+  /setpersonshome:
+    post:
+      tags:
+        - welcome
+      description: |
+        Sets a person as 'At home'.
+      operationId: setpersonshome
+      parameters:
+        - name: home_id
+          in: query
+          description: ID of the Home you're interested in
+          required: true
+          type: string
+        - name: person_ids
+          in: query
+          description: List of persons IDs
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomePersonsHomeResponse'
+      security:
+        - code_oauth:
+            - write_camera
+        - password_oauth:
+            - write_camera
+  /addwebhook:
+    get:
+      tags:
+        - welcome
+      description: |
+        Links a callback url to a user.
+      operationId: addwebhook
+      parameters:
+        - name: url
+          in: query
+          description: Your webhook callback url
+          required: true
+          type: string
+        - name: app_type
+          in: query
+          description: 'Webhooks are only available for Welcome, enter app_camera.'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeWebhookResponse'
+      security:
+        - code_oauth: []
+        - password_oauth: []
+  /dropwebhook:
+    get:
+      tags:
+        - welcome
+      description: |
+        Dissociates a webhook from a user.
+      operationId: dropwebhook
+      parameters:
+        - name: app_type
+          in: query
+          description: 'For Welcome, use app_camera'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/NAWelcomeWebhookResponse'
+      security:
+        - code_oauth: []
+        - password_oauth: []
+securityDefinitions:
+  code_oauth:
+    type: oauth2
+    authorizationUrl: 'https://api.netatmo.net/oauth2/authorize'
+    tokenUrl: 'https://api.netatmo.net/oauth2/token'
+    flow: accessCode
+    scopes:
+      read_station: Read weather station's data
+      write_thermostat: Configure the thermostat
+      read_thermostat: Read thermostat's data
+      read_camera: Read welcome camera's data
+      access_camera: Access welcome camera
+      write_camera: Write welcome camera's data
+      read_homecoach: Read data coming from Healthy Home Coach
+  password_oauth:
+    type: oauth2
+    tokenUrl: 'https://api.netatmo.net/oauth2/token'
+    flow: password
+    scopes:
+      read_station: Read weather station's data
+      write_thermostat: Configure the thermostat
+      read_thermostat: Read thermostat's data
+      read_camera: Read welcome camera's data
+      access_camera: Access welcome camera
+      write_camera: Write welcome camera's data
+      read_homecoach: Read data coming from Healthy Home Coach
+definitions:
+  NAOkResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+      body:
+        type: string
+  NAPublicDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/NAPublicData'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAPublicData:
+    properties:
+      _id:
+        type: string
+        description: id of the station
+        example: '70:ee:50:09:f0:xx'
+      place:
+        description: 'Information about the station location (latitude/longitude of the station, altitude (meters), timezone)'
+        $ref: '#/definitions/NAPlace'
+      mark:
+        type: integer
+      modules:
+        type: array
+        items:
+          type: string
+      module_types:
+        type: object
+        description: 'Latest measurements of the station, organized by module'
+        additionalProperties:
+          type: string
+      measures:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/NAMeasure'
+  NAMeasure:
+    properties:
+      res:
+        additionalProperties:
+          type: array
+          items:
+            type: number
+            format: double
+      type:
+        type: array
+        items:
+          type: string
+      rain_60min:
+        type: number
+      rain_24h:
+        type: number
+      rain_live:
+        type: number
+      rain_utc:
+        type: integer
+        format: int64
+      wind_strength:
+        type: number
+      wind_angle:
+        type: number
+      gust_strength:
+        type: number
+      gust_angle:
+        type: number
+      wind_timeutc":
+        type: integer
+        format: int64
+  NAUserResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAUser'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NADeviceListResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NADeviceListBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAMeasureResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/NAMeasureBodyElem'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAThermostatDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAThermostatDataBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAStationDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAStationDataBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAHealthyHomeCoachDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAHealthyHomeCoachDataBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAThermStateResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAThermStateBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NANewScheduleResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NANewScheduleBody'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAPartnerDevicesResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        type: array
+        items:
+          type: string
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAUser:
+    properties:
+      _id:
+        type: string
+      administrative:
+        description: Contains administrative information related to the user
+        $ref: '#/definitions/NAUserAdministrative'
+      date_creation:
+        $ref: '#/definitions/NADate'
+      devices:
+        type: array
+        description: An array of string containing the ids of the devices owned by the user
+        items:
+          type: string
+      friend_devices:
+        type: array
+        description: |
+          An array of string containing the ids of the devices on which the user has a "guest" access
+        items:
+          type: string
+      mail:
+        type: string
+      timeline_not_read:
+        type: integer
+        format: int32
+      timeline_size:
+        type: integer
+        format: int32
+  NADeviceListBody:
+    properties:
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/NADevice'
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/NAModule'
+  NAMeasureBodyElem:
+    properties:
+      beg_time:
+        type: integer
+        format: int32
+      step_time:
+        type: integer
+        format: int32
+      value:
+        type: array
+        items:
+          type: array
+          items:
+            type: number
+            format: float
+  NAThermostatDataBody:
+    properties:
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/NAPlug'
+      user:
+        $ref: '#/definitions/NAUser'
+  NAStationDataBody:
+    properties:
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/NAMain'
+      user:
+        $ref: '#/definitions/NAUser'
+  NAHealthyHomeCoachDataBody:
+    properties:
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/NAHealthyHomeCoach'
+      user:
+        $ref: '#/definitions/NAUser'
+  NAThermStateBody:
+    properties:
+      setpoint:
+        $ref: '#/definitions/NASetpoint'
+      setpoint_order:
+        $ref: '#/definitions/NASetpoint'
+      therm_program:
+        $ref: '#/definitions/NAThermProgram'
+      therm_program_backup:
+        type: array
+        items:
+          $ref: '#/definitions/NAThermProgram'
+      therm_program_order:
+        $ref: '#/definitions/NAThermProgram'
+      therm_orientation:
+        type: integer
+        format: int32
+      therm_relay_cmd:
+        type: integer
+        format: int32
+      battery_vp:
+        type: integer
+        format: int32
+      battery_percent:
+        type: integer
+        format: int32
+        description: It contains the current battery level in percentage.
+      rf_status:
+        type: integer
+        format: int32
+      plug_connected_boiler:
+        type: integer
+        format: int32
+      udp_conn:
+        type: boolean
+      last_therm_seen:
+        type: integer
+        format: int32
+      last_plug_seen:
+        type: integer
+        format: int32
+      wifi_status:
+        type: integer
+        format: int32
+      measured:
+        $ref: '#/definitions/NAThermMeasure'
+  NANewScheduleBody:
+    properties:
+      schedule_id:
+        type: string
+        description: |
+          Id of the schedule. It can be use with the method "switchschedule" 
+  NAUserAdministrative:
+    properties:
+      country:
+        type: string
+        description: user country
+      lang:
+        type: string
+        description: user locale
+      reg_locale:
+        type: string
+        description: user regional preferences (used for displaying date)
+      unit:
+        type: string
+        description: '0 -> metric system, 1 -> imperial system'
+      windunit:
+        type: string
+        description: '0 -> kph, 1 -> mph, 2 -> ms, 3 -> beaufort, 4 -> knot'
+      pressureunit:
+        type: string
+        description: '0 -> mbar, 1 -> inHg, 2 -> mmHg'
+      feel_like_algo:
+        type: string
+        description: 'algorithm used to compute feel like temperature, 0 -> humidex, 1 -> heat-index'
+  NADate:
+    properties:
+      sec:
+        type: integer
+        format: int32
+      usec:
+        type: integer
+        format: int32
+  NADevice:
+    properties:
+      _id:
+        type: string
+      behavior:
+        type: integer
+        format: int32
+      cipher_id:
+        type: string
+      date_setup:
+        $ref: '#/definitions/NADate'
+      firmware:
+        type: integer
+        format: int32
+      hw_version:
+        type: integer
+        format: int32
+      heating_system:
+        $ref: '#/definitions/NAHeatingSystem'
+      house_model:
+        $ref: '#/definitions/NAHouseModel'
+      ip:
+        type: string
+      last_fw_update:
+        type: integer
+        format: int32
+      last_radio_store:
+        type: integer
+        format: int32
+      last_status_store:
+        type: integer
+        format: int32
+      last_upgrade:
+        type: integer
+        format: int32
+      module_name:
+        type: string
+      modules:
+        type: array
+        description: It lists which modules are linked with this device
+        items:
+          type: string
+      place:
+        $ref: '#/definitions/NAPlace'
+      setpoint:
+        type: object
+      setpoint_default_duration:
+        type: integer
+        format: int32
+      setpoint_order:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            $ref: '#/definitions/NAObject'
+      public_ext_data:
+        type: boolean
+      station_name:
+        type: string
+      therm_program:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/NAThermProgram'
+      therm_program_backup:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            $ref: '#/definitions/NAThermProgram'
+      therm_program_order:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            $ref: '#/definitions/NAObject'
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      user_owner:
+        type: array
+        items:
+          type: string
+      udp_conn:
+        type: boolean
+      wifi_status:
+        type: integer
+        format: int32
+        description: |
+          It contains the current wifi status. The different thresholds to take into account are
+          RSSI_THRESHOLD_0 = 86 bad signal
+          RSSI_THRESHOLD_1 = 71 middle quality signal
+          RSSI_THRESHOLD_2 = 56 good signal
+      new_feature_avail:
+        type: boolean
+      first_pid_avail:
+        type: boolean
+      dashboard_data:
+        description: It contains all the measurements that can be displayed on the dashboard
+        $ref: '#/definitions/NADashboardData'
+      data_type:
+        type: array
+        items:
+          type: string
+  NAStationModule:
+    properties:
+      _id:
+        type: string
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      last_message:
+        type: integer
+        format: int32
+      last_seen:
+        type: integer
+        format: int32
+      dashboard_data:
+        description: It contains all the measurements that can be displayed on the dashboard
+        $ref: '#/definitions/NADashboardData'
+      data_type:
+        type: array
+        items:
+          type: string
+      module_name:
+        type: string
+      last_setup:
+        type: integer
+        format: int32
+      battery_vp:
+        type: integer
+        format: int32
+        description: |
+          It contains the current battery status. The threshold depends on the kind of module, below is the list of the different threshold to take into account according the module type.
+          "Indoor module Battery range: 6000 ... 4200" |
+          INDOOR_BATTERY_LEVEL_FULL = 5640
+          INDOOR_BATTERY_LEVEL_HIGH = 5280
+          INDOOR_BATTERY_LEVEL_MEDIUM = 4920
+          INDOOR_BATTERY_LEVEL_LOW = 4560
+          "Below 4560: very low" |
+              
+          "Raingauge and outdoor module Battery range: 6000 ... 3600" |
+          BATTERY_LEVEL_FULL = 5500
+          BATTERY_LEVEL_HIGH = 5000
+          BATTERY_LEVEL_MEDIUM = 4500
+          BATTERY_LEVEL_LOW = 4000
+          "Below 4000: very low" |
+              
+          "Thermostat Battery range: 4500 ... 3000" |
+          THERMOSTAT_BATTERY_LEVEL_FULL = 4100
+          THERMOSTAT_BATTERY_LEVEL_HIGH = 3600
+          THERMOSTAT_BATTERY_LEVEL_MEDIUM = 3300
+          THERMOSTAT_BATTERY_LEVEL_LOW = 3000
+          "Below 3000: very low"
+      battery_percent:
+        type: integer
+        format: int32
+        description: It contains the current battery level in percentage.
+      rf_status:
+        type: integer
+        format: int32
+        description: |
+          "It contains the current radio status. The different thresholds to take into account are :" |
+          RADIO_THRESHOLD_SIGNAL_LOW = 90 
+          RADIO_THRESHOLD_SIGNAL_MEDIUM = 80
+          RADIO_THRESHOLD_SIGNAL_HIGH = 70
+          RADIO_THRESHOLD_SIGNAL_FULL = 60
+      firmware:
+        type: integer
+        format: int32
+  NAModule:
+    properties:
+      _id:
+        type: string
+      date_setup:
+        $ref: '#/definitions/NADate'
+      firmware:
+        type: integer
+        format: int32
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      module_name:
+        type: string
+      main_device:
+        type: string
+      last_message:
+        type: integer
+        format: int32
+      last_seen:
+        type: integer
+        format: int32
+      public_ext_data:
+        type: boolean
+      rf_status:
+        type: integer
+        format: int32
+        description: |
+          "It contains the current radio status. The different thresholds to take into account are :" |
+          RADIO_THRESHOLD_SIGNAL_LOW = 90 
+          RADIO_THRESHOLD_SIGNAL_MEDIUM = 80
+          RADIO_THRESHOLD_SIGNAL_HIGH = 70
+          RADIO_THRESHOLD_SIGNAL_FULL = 60
+      battery_vp:
+        type: integer
+        format: int32
+        description: |
+          It contains the current battery status. The threshold depends on the kind of module, below is the list of the different threshold to take into account according the module type.
+          "Indoor module Battery range: 6000 ... 4200" |
+          INDOOR_BATTERY_LEVEL_FULL = 5640
+          INDOOR_BATTERY_LEVEL_HIGH = 5280
+          INDOOR_BATTERY_LEVEL_MEDIUM = 4920
+          INDOOR_BATTERY_LEVEL_LOW = 4560
+          "Below 4560: very low" |
+              
+          "Raingauge and outdoor module Battery range: 6000 ... 3600" |
+          BATTERY_LEVEL_FULL = 5500
+          BATTERY_LEVEL_HIGH = 5000
+          BATTERY_LEVEL_MEDIUM = 4500
+          BATTERY_LEVEL_LOW = 4000
+          "Below 4000: very low" |
+              
+          "Thermostat Battery range: 4500 ... 3000" |
+          THERMOSTAT_BATTERY_LEVEL_FULL = 4100
+          THERMOSTAT_BATTERY_LEVEL_HIGH = 3600
+          THERMOSTAT_BATTERY_LEVEL_MEDIUM = 3300
+          THERMOSTAT_BATTERY_LEVEL_LOW = 3000
+          "Below 3000: very low"
+      battery_percent:
+        type: integer
+        format: int32
+        description: It contains the current battery level in percentage.
+      therm_orientation:
+        type: integer
+        format: int32
+      therm_relay_cmd:
+        type: integer
+        format: int32
+      dashboard_data:
+        description: It contains all the measurements that can be displayed on the dashboard
+        $ref: '#/definitions/NADashboardData'
+      data_type:
+        type: array
+        items:
+          type: string
+  NAYearMonth:
+    properties:
+      'y':
+        type: integer
+        format: int32
+      m:
+        type: integer
+        format: int32
+  NASetpointLog:
+    properties:
+      setpoint:
+        $ref: '#/definitions/NASetpoint'
+      timestamp:
+        type: integer
+        format: int64
+  NAThermostat:
+    properties:
+      _id:
+        type: string
+      firmware:
+        type: integer
+        format: int32
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      module_name:
+        type: string
+      last_message:
+        type: integer
+        format: int32
+      rf_status:
+        type: integer
+        format: int32
+        description: |
+          "It contains the current radio status. The different thresholds to take into account are :" |
+          RADIO_THRESHOLD_SIGNAL_LOW = 90 
+          RADIO_THRESHOLD_SIGNAL_MEDIUM = 80
+          RADIO_THRESHOLD_SIGNAL_HIGH = 70
+          RADIO_THRESHOLD_SIGNAL_FULL = 60
+      battery_vp:
+        type: integer
+        format: int32
+        description: |
+          It contains the current battery status. The threshold depends on the kind of module, below is the list of the different threshold to take into account according the module type.
+          "Indoor module Battery range: 6000 ... 4200" |
+          INDOOR_BATTERY_LEVEL_FULL = 5640
+          INDOOR_BATTERY_LEVEL_HIGH = 5280
+          INDOOR_BATTERY_LEVEL_MEDIUM = 4920
+          INDOOR_BATTERY_LEVEL_LOW = 4560
+          "Below 4560: very low" |
+              
+          "Raingauge and outdoor module Battery range: 6000 ... 3600" |
+          BATTERY_LEVEL_FULL = 5500
+          BATTERY_LEVEL_HIGH = 5000
+          BATTERY_LEVEL_MEDIUM = 4500
+          BATTERY_LEVEL_LOW = 4000
+          "Below 4000: very low" |
+              
+          "Thermostat Battery range: 4500 ... 3000" |
+          THERMOSTAT_BATTERY_LEVEL_FULL = 4100
+          THERMOSTAT_BATTERY_LEVEL_HIGH = 3600
+          THERMOSTAT_BATTERY_LEVEL_MEDIUM = 3300
+          THERMOSTAT_BATTERY_LEVEL_LOW = 3000
+          "Below 3000: very low"
+      battery_percent:
+        type: integer
+        format: int32
+        description: It contains the current battery level in percentage.
+      setpoint:
+        description: Setpoint currently in use by the Thermostat.
+        $ref: '#/definitions/NASetpoint'
+      setpoint_order:
+        $ref: '#/definitions/NASetpoint'
+      therm_orientation:
+        type: integer
+        format: int32
+      therm_relay_cmd:
+        type: integer
+        format: int32
+      last_therm_seen:
+        type: integer
+        format: int32
+      measured:
+        description: It contains the last measurements of the Thermostat
+        $ref: '#/definitions/NAThermMeasure'
+      setpoint_history:
+        description: 'The last 20 setpoints (mode, endtime, and timestamp) the thermostats has entered.'
+        type: array
+        items:
+          $ref: '#/definitions/NASetpointLog'
+      therm_program_list:
+        description: List of the weekly heating planning used by the thermostat
+        type: array
+        items:
+          $ref: '#/definitions/NAThermProgram'
+  NAPlug:
+    properties:
+      _id:
+        type: string
+        example: '70:ee:50:09:f0:xx'
+      firmware:
+        type: integer
+        format: int32
+      last_status_store:
+        type: integer
+        format: int32
+      place:
+        $ref: '#/definitions/NAPlace'
+      station_name:
+        type: string
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      wifi_status:
+        type: integer
+        format: int32
+        description: |
+          It contains the current wifi status. The different thresholds to take into account are
+          RSSI_THRESHOLD_0 = 86 bad signal
+          RSSI_THRESHOLD_1 = 71 middle quality signal
+          RSSI_THRESHOLD_2 = 56 good signal
+      plug_connected_boiler:
+        type: integer
+        format: int32
+      udp_conn:
+        type: boolean
+      last_plug_seen:
+        type: integer
+        format: int32
+      last_bilan:
+        $ref: '#/definitions/NAYearMonth'
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/NAThermostat'
+      syncing:
+        type: boolean
+  NAMain:
+    properties:
+      _id:
+        type: string
+      cipher_id:
+        type: string
+      last_status_store:
+        type: integer
+        format: int32
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/NAStationModule'
+      place:
+        $ref: '#/definitions/NAPlace'
+      station_name:
+        type: string
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NAMain : for the base station
+          NAModule1 : for the outdoor module
+          NAModule4 : for the additionnal indoor module
+          NAModule3 : for the rain gauge module
+          NAPlug : for the thermostat relay/plug
+          NATherm1 : for the thermostat module
+      dashboard_data:
+        description: It contains all the measurements that can be displayed on the dashboard
+        $ref: '#/definitions/NADashboardData'
+      data_type:
+        type: array
+        items:
+          type: string
+      co2_calibrating:
+        type: boolean
+      date_setup:
+        type: integer
+        format: int32
+      last_setup:
+        type: integer
+        format: int32
+      module_name:
+        type: string
+      firmware:
+        type: integer
+        format: int32
+      last_upgrade:
+        type: integer
+        format: int32
+      wifi_status:
+        type: integer
+        format: int32
+        description: |
+          It contains the current wifi status. The different thresholds to take into account are
+          RSSI_THRESHOLD_0 = 86 bad signal
+          RSSI_THRESHOLD_1 = 71 middle quality signal
+          RSSI_THRESHOLD_2 = 56 good signal
+  NAHealthyHomeCoach:
+    properties:
+      _id:
+        type: string
+      cipher_id:
+        type: string
+      last_status_store:
+        type: integer
+        format: int32
+      place:
+        $ref: '#/definitions/NAPlace'
+      type:
+        type: string
+        description: |
+          Included in every device or module. It defines the type of the device/module. Its values are among :
+          NHC: Healthy Home Coach
+      dashboard_data:
+        description: It contains all the measurements that can be displayed on the dashboard
+        $ref: '#/definitions/NADashboardData'
+      data_type:
+        type: array
+        items:
+          type: string
+      co2_calibrating:
+        type: boolean
+      date_setup:
+        type: integer
+        format: int32
+      last_setup:
+        type: integer
+        format: int32
+      firmware:
+        type: integer
+        format: int32
+      last_upgrade:
+        type: integer
+        format: int32
+      wifi_status:
+        type: integer
+        format: int32
+        description: |
+          It contains the current wifi status. The different thresholds to take into account are
+          RSSI_THRESHOLD_0 = 86 bad signal
+          RSSI_THRESHOLD_1 = 71 middle quality signal
+          RSSI_THRESHOLD_2 = 56 good signal
+      name:
+        type: string
+  NAHouseModel:
+    properties:
+      algo_type:
+        type: string
+      ca:
+        $ref: '#/definitions/NAHouseModelCa'
+      ext_temps:
+        type: object
+        additionalProperties:
+          type: integer
+          format: int32
+      first_anticipate_avail:
+        type: boolean
+      first_pid_avail:
+        type: boolean
+      gefs:
+        $ref: '#/definitions/NAStation'
+      in_use:
+        type: string
+      last_compute_try:
+        $ref: '#/definitions/NADate'
+      link_station:
+        $ref: '#/definitions/NALinkStation'
+      pid_algo:
+        $ref: '#/definitions/NAPidAlgo'
+      station:
+        $ref: '#/definitions/NAStation'
+      prefered_algo_type:
+        type: string
+      simple_algo:
+        $ref: '#/definitions/NASimpleAlgo'
+      time:
+        $ref: '#/definitions/NADate'
+      station_firsttime_anticipate:
+        type: boolean
+      time_algo_changed:
+        type: integer
+        format: int32
+      time_pid_computed:
+        type: integer
+        format: int32
+  NAHouseModelCa:
+    properties:
+      te:
+        type: number
+        format: double
+      ti:
+        type: integer
+        format: int32
+      so:
+        type: string
+  NAStation:
+    properties:
+      lag_down:
+        type: integer
+        format: int32
+      lag_up:
+        type: integer
+        format: int32
+      off_overshoot:
+        type: number
+        format: float
+      on_overshoot:
+        type: number
+        format: float
+      pk:
+        type: integer
+        format: int32
+      tau:
+        type: integer
+        format: int32
+  NALinkStation:
+    properties:
+      mac:
+        type: string
+      ext:
+        type: string
+      Temperature:
+        type: number
+        format: float
+  NAPidAlgo:
+    properties:
+      gain:
+        type: integer
+        format: int32
+      period:
+        type: integer
+        format: int32
+      td:
+        type: integer
+        format: int32
+      ti:
+        type: integer
+        format: int32
+  NAPlace:
+    properties:
+      city:
+        type: string
+      altitude:
+        type: number
+        format: float
+      country:
+        type: string
+      from_ip:
+        type: boolean
+      improveLocProposed:
+        type: boolean
+      location:
+        type: array
+        items:
+          type: number
+          format: double
+      timezone:
+        type: string
+      trust_location:
+        type: boolean
+  NASetpoint:
+    properties:
+      setpoint_temp:
+        type: number
+        format: float
+      setpoint_endtime:
+        type: integer
+        format: int32
+      setpoint_mode:
+        type: string
+  NAThermProgram:
+    properties:
+      program_id:
+        type: string
+      name:
+        type: string
+      zones:
+        type: array
+        items:
+          $ref: '#/definitions/NAZone'
+      timetable:
+        type: array
+        items:
+          $ref: '#/definitions/NATimeTableItem'
+      selected:
+        type: boolean
+  NAZone:
+    properties:
+      id:
+        type: integer
+        format: int32
+      type:
+        type: integer
+        format: int32
+      name:
+        type: string
+      temp:
+        type: number
+        format: float
+  NATimeTableItem:
+    properties:
+      id:
+        type: integer
+        format: int32
+      m_offset:
+        type: integer
+        format: int32
+  NAHeatingSystem:
+    properties:
+      heating_energy:
+        type: string
+      heating_system_window_seen:
+        type: boolean
+  NASimpleAlgo:
+    properties:
+      high_deadband:
+        type: integer
+        format: int32
+  NADashboardData:
+    properties:
+      time_utc:
+        type: integer
+        format: int32
+      device_id:
+        type: number
+        format: float
+      BoilerOn:
+        type: integer
+        format: int32
+      BoilerOff:
+        type: integer
+        format: int32
+      Temperature:
+        type: number
+        format: float
+        description: Last temperature measure @ time_utc (in °C)
+      temp_trend:
+        type: string
+        description: Temperature evolution trend
+      date_max_temp:
+        type: integer
+        format: int32
+        description: Timestamp when max temperature was measured
+      date_min_temp:
+        type: integer
+        format: int32
+        description: Timestamp when min temperature was measured
+      min_temp:
+        type: number
+        format: float
+        description: Max temperature of the day (measured @ date_max_temp)
+      max_temp:
+        type: number
+        format: float
+        description: Min temperature of the day (measured @ date_min_temp)
+      AbsolutePressure:
+        type: number
+        format: float
+        description: Real measured pressure @ time_utc (in mb)
+      CO2:
+        type: number
+        format: float
+        description: Last Co2 measured @ time_utc (in ppm)
+      Humidity:
+        type: number
+        format: float
+        description: Last humidity measured @ time_utc (in %)
+      Noise:
+        type: number
+        format: float
+        description: Last noise measured @ time_utc (in db)
+      Pressure:
+        type: number
+        format: float
+        description: Last Sea level pressure measured @ time_utc (in mb)
+      pressure_trend:
+        type: string
+        description: Pressure evolution trend
+      Rain:
+        type: number
+        format: float
+        description: Last rain measured (in mm)
+      sum_rain_1:
+        type: number
+        format: float
+        description: Amount of rain in last hour
+      sum_rain_24:
+        type: number
+        format: float
+        description: Amount of rain today
+      WindAngle:
+        type: integer
+        format: int32
+        description: Current 5 min average wind direction measured @ time_utc (in °)
+      GustAngle:
+        type: integer
+        format: int32
+        description: Direction of the last 5 min highest gust wind
+      WindStrength:
+        type: integer
+        format: int32
+        description: Current 5 min average wind speed measured @ time_utc (in km/h)
+      max_wind_str:
+        type: integer
+        format: int32
+      date_max_wind_str:
+        type: integer
+        format: int32
+        description: Timestamp when max wind strength was measured
+      GustStrength:
+        type: integer
+        format: int32
+        description: Speed of the last 5 min highest gust wind
+      health_idx:
+        type: integer
+        format: int32
+        description: 'Current health index: 0 = Healthy, 1 = Fine, 2 = Fair, 3 = Poor, 4 = Unhealthy'
+  NAThermMeasure:
+    properties:
+      time:
+        type: integer
+        format: int32
+      temperature:
+        type: number
+        format: float
+      setpoint_temp:
+        type: number
+        format: float
+  NAWelcomeHomeDataResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAWelcomeHomeData'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAWelcomeHomeData:
+    properties:
+      homes:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeHome'
+      user:
+        $ref: '#/definitions/NAWelcomeUser'
+      global_info:
+        $ref: '#/definitions/NAWelcomeGlobalInfo'
+  NAWelcomeHome:
+    properties:
+      id:
+        type: string
+        description: Id of the home.
+      name:
+        type: string
+        description: Name of the home
+      persons:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomePerson'
+      place:
+        $ref: '#/definitions/NAWelcomePlace'
+      cameras:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeCamera'
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeEvent'
+      modules:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeModule'
+  NAWelcomeUser:
+    properties:
+      lang:
+        type: string
+        description: user locale
+      reg_locale:
+        type: string
+        description: user regional preferences (used for displaying date)
+  NAWelcomeGlobalInfo:
+    properties:
+      show_tags:
+        type: boolean
+        description: show tags
+  NAWelcomePerson:
+    properties:
+      id:
+        type: string
+        description: Id of the person.
+      last_seen:
+        type: integer
+        format: int32
+        description: Time at which the person was last seen.
+      out_of_sight:
+        type: boolean
+        description: True if the Person is out of sight.
+      face:
+        $ref: '#/definitions/NAWelcomeFace'
+      pseudo:
+        type: string
+        description: 'Name of the person, if pseudo is missing, person is unknown.'
+  NAWelcomeFace:
+    properties:
+      id:
+        type: string
+        description: Id of the face.
+      version:
+        type: integer
+        format: int32
+        description: Version of the face if user changed their photo.
+      key:
+        type: string
+        description: Key for this face to use in getcamerapicture.
+  NAWelcomePlace:
+    properties:
+      city:
+        type: string
+        description: City of the home.
+      country:
+        type: string
+        description: Country of the home.
+      timezone:
+        type: string
+        description: Timezone of the home.
+  NAWelcomeCamera:
+    properties:
+      id:
+        type: string
+        description: Id of the camera
+      type:
+        type: string
+        description: Type of the camera
+      status:
+        type: string
+        description: If camera is monitoring (on/off)
+      vpn_url:
+        type: string
+        description: Only for scope access_camera. Address of the camera
+      is_local:
+        type: boolean
+        description: Only for scope access_camera. If Camera and application requesting the information are on the same IP (true/false)
+      sd_status:
+        type: string
+        description: If SD card status is ok (on/off)
+      alim_status:
+        type: string
+        description: If power supply is ok (on/off)
+      name:
+        type: string
+        description: Name of the camera
+  NAWelcomeEvent:
+    properties:
+      id:
+        type: string
+        description: Identifier of the event
+      type:
+        type: string
+        description: Type of events. Go to the Welcome page for further details.
+      time:
+        type: integer
+        format: int32
+        description: Time of occurence of event
+      camera_id:
+        type: string
+        description: Camera that detected the event
+      person_id:
+        type: string
+        description: Id of the person the event is about (if any)
+      snapshot:
+        $ref: '#/definitions/NAWelcomeSnapshot'
+        description: 'Snapshot id, version and key. (Used in Getcamerapicture)'
+      video_id:
+        type: string
+        description: Identifier of the video
+      video_status:
+        type: string
+        description: 'Status of the video (recording, deleted or available)'
+      is_arrival:
+        type: boolean
+        description: If person was considered away before being seen during this event
+      message:
+        type: string
+        description: User facing event description
+      sub_type:
+        type: integer
+        format: int32
+        description: Subtypes of SD and Alim events. Go to Welcome page for further details.
+  NAWelcomeSnapshot:
+    properties:
+      id:
+        type: string
+        description: Id of the snapshot.
+      version:
+        type: integer
+        format: int32
+        description: Version of the snapshot.
+      key:
+        type: string
+        description: Key for this snapshot.
+  NAWelcomeModule:
+    properties:
+      id:
+        type: string
+        description: mac address of the module
+      type:
+        type: string
+        description: NACamDoorTag for tags
+      name:
+        type: string
+        description: name of the module (given by the user)
+      battery_percent:
+        type: integer
+        format: int32
+        description: remaining battery percentage
+      status:
+        type: string
+        description: status of the module
+      rf:
+        type: string
+        description: Radio status
+      last_activity:
+        type: integer
+        format: int32
+        description: Timestamp of last move detected by the module
+  NAWelcomeEventResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      body:
+        $ref: '#/definitions/NAWelcomeEventData'
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAWelcomeEventData:
+    properties:
+      events_list:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeEvent'
+  NAWelcomePersonsAwayResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAWelcomePersonsHomeResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      time_exec:
+        type: number
+        format: double
+      time_server:
+        type: integer
+        format: int32
+  NAWelcomeWebhookResponse:
+    properties:
+      status:
+        type: string
+        example: ok
+      time_exec:
+        type: number
+        format: double
+  NAObject:
+    properties:
+      $id:
+        type: string
