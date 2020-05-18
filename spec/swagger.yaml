@@ -2183,6 +2183,32 @@ definitions:
         type: integer
         format: int32
         description: Subtypes of SD and Alim events. Go to Welcome page for further details.
+      event_list:
+        type: array
+        items:
+          $ref: '#/definitions/NAWelcomeSubEvent'
+  NAWelcomeSubEvent:
+    properties:
+      id:
+        type: string
+        description: Identifier of the sub event
+      type:
+        type: string
+        enum:
+          - human
+          - animal
+          - vehicle
+        description: Type of the detected object.
+      time:
+        type: integer
+        format: int32
+        description: Time of occurence of the sub event
+      message:
+        type: string
+        description: User facing sub event description
+      snapshot:
+        $ref: '#/definitions/NAWelcomeSnapshot'
+        description: 'Snapshot id, version and key. (Used in Getcamerapicture)'
   NAWelcomeSnapshot:
     properties:
       id:
