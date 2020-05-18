@@ -2203,12 +2203,9 @@ definitions:
         type: integer
         format: int32
         description: Time of occurence of the sub event
-      camera_id:
-        type: string
-        description: Camera that detected the sub event
-      device_id:
-        type: string
-        description: Device that detected the sub event
+      offset:
+        type: integer
+        format: int32
       message:
         type: string
         description: User facing sub event description
