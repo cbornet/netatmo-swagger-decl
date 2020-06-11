@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.1.4
+  version: 1.1.5
   title: Netatmo
   description: |
     <h3>Welcome to the Netatmo swagger on-line documentation !</h3>
@@ -2146,6 +2146,13 @@ definitions:
       name:
         type: string
         description: Name of the camera
+      light_mode_status:
+        type: string
+        enum:
+          - on
+          - off
+          - auto
+        description: State of (flood-)light
   NAWelcomeEvent:
     properties:
       id:
