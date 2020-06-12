@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.1.4
+  version: 1.1.5
   title: Netatmo
   description: |
     <h3>Welcome to the Netatmo swagger on-line documentation !</h3>
@@ -338,13 +338,17 @@ paths:
     get:
       tags:
         - station
-      description: The method getstationsdata Returns data from a user Weather Stations (measures and device specific data).
+      description: The method getstationsdata Returns data from a user's Weather Stations (measures and device specific data).
       operationId: getstationsdata
       parameters:
         - name: device_id
           in: query
           description: Id of the device you want to retrieve information of
           type: string
+        - name: get_favorites
+          in: query
+          description: Whether to include the user's favorite Weather Stations in addition to the user's own Weather Stations
+          type: boolean
       responses:
         '200':
           description: Successful response
@@ -1343,6 +1347,9 @@ definitions:
       last_seen:
         type: integer
         format: int32
+      reachable:
+        type: boolean
+        description: true when the station was seen by the Netatmo cloud within the last 4 hours
       dashboard_data:
         description: It contains all the measurements that can be displayed on the dashboard
         $ref: '#/definitions/NADashboardData'
@@ -1687,6 +1694,15 @@ definitions:
           RSSI_THRESHOLD_0 = 86 bad signal
           RSSI_THRESHOLD_1 = 71 middle quality signal
           RSSI_THRESHOLD_2 = 56 good signal
+      reachable:
+        type: boolean
+        description: true when the station was seen by the Netatmo cloud within the last 4 hours
+      read_only:
+        type: boolean
+        description: true when the user was invited to (or has favorited) a station, false when the user owns it
+      favorite:
+        type: boolean
+        description: true when the device is a user favorite and not owned by them
   NAHealthyHomeCoach:
     properties:
       _id:
@@ -2146,6 +2162,13 @@ definitions:
       name:
         type: string
         description: Name of the camera
+      light_mode_status:
+        type: string
+        enum:
+          - on
+          - off
+          - auto
+        description: State of (flood-)light
   NAWelcomeEvent:
     properties:
       id:
