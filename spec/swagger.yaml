@@ -2190,6 +2190,9 @@ definitions:
       person_id:
         type: string
         description: Id of the person the event is about (if any)
+      category:
+        type: string
+        description: Type of the detected object (when something like a human or animal was detected)
       snapshot:
         $ref: '#/definitions/NAWelcomeSnapshot'
         description: 'Snapshot id, version and key. (Used in Getcamerapicture)'
