@@ -2192,7 +2192,11 @@ definitions:
         description: Id of the person the event is about (if any)
       category:
         type: string
-        description: Type of the detected object (when something like a human or animal was detected)
+        enum:
+          - human
+          - animal
+          - vehicle
+        description: Type of the detected object.
       snapshot:
         $ref: '#/definitions/NAWelcomeSnapshot'
         description: 'Snapshot id, version and key. (Used in Getcamerapicture)'
