@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.1.5
+  version: 1.1.6
   title: Netatmo
   description: |
     <h3>Welcome to the Netatmo swagger on-line documentation !</h3>
@@ -1624,8 +1624,7 @@ definitions:
           RSSI_THRESHOLD_1 = 71 middle quality signal
           RSSI_THRESHOLD_2 = 56 good signal
       plug_connected_boiler:
-        type: integer
-        format: int32
+        type: boolean
       udp_conn:
         type: boolean
       last_plug_seen:
