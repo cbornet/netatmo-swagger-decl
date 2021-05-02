@@ -2196,6 +2196,7 @@ definitions:
           - human
           - animal
           - vehicle
+          - incoming_call
           - accepted_call
           - missed_call
         description: Type of the detected object.
@@ -2233,6 +2234,7 @@ definitions:
           - human
           - animal
           - vehicle
+          - incoming_call
           - accepted_call
           - missed_call
         description: Type of the detected object.
