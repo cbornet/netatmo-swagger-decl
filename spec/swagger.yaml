@@ -2196,6 +2196,8 @@ definitions:
           - human
           - animal
           - vehicle
+          - accepted_call
+          - missed_call
         description: Type of the detected object.
       snapshot:
         $ref: '#/definitions/NAWelcomeSnapshot'
@@ -2231,6 +2233,8 @@ definitions:
           - human
           - animal
           - vehicle
+          - accepted_call
+          - missed_call
         description: Type of the detected object.
       time:
         type: integer
