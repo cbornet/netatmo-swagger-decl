@@ -11,7 +11,7 @@
     "gulp-util": "^3.0.7",
     "portfinder": "^1.0.3",
     "shelljs": "^0.7.0",
-    "swagger-repo": "^1.0.0",
+    "swagger-repo": "^1.5.1",
     "swagger-ui": "^2.1.4"
   },
   "private": true,
